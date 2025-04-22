@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-
 int main()
 {
     // 1) VideoMode ahora recibe un sf::Vector2u
