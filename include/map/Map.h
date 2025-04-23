@@ -4,8 +4,8 @@
 #include <iostream>
 #include "MapTile.h"
 
-const int MAP_WIDTH = 15;
-const int MAP_HEIGHT = 10;
+const int MAP_WIDTH = 20;
+const int MAP_HEIGHT = 11;
 
 class Map {
 private:
