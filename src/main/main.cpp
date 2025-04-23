@@ -1,28 +1,47 @@
 #include <SFML/Graphics.hpp>
-int main()
-{
-    // 1) VideoMode ahora recibe un sf::Vector2u
-    sf::RenderWindow window(
-        sf::VideoMode({800u, 600u}),    // Vector2u implícito, bitsPerPixel = 32 por defecto
-        "SFML 3 Test"
-    );
+#include "../../include/map/Map.h"
 
-    sf::CircleShape shape(200.f);
-    shape.setFillColor(sf::Color::Green);
+const int TILE_SIZE = 40;
 
-    // 2) Bucle principal
-    while (window.isOpen())
-    {
-        // 3) pollEvent() devuelve std::optional<sf::Event>
-        while (auto event = window.pollEvent())
-        {
-            // 4) Para comprobar cierres de ventana, usamos is<T>
+sf::Color getColorForTile(TileType type) {
+    switch (type) {
+        case TileType::Entry:   return sf::Color::Green;
+        case TileType::Castle:  return sf::Color::Blue;
+        case TileType::Tower:   return sf::Color::Red;
+        case TileType::Path:    return sf::Color(128, 128, 128);
+        default:                return sf::Color::White;
+    }
+}
+
+int main() {
+    Map gameMap;
+
+    // Coloca torres para verlas
+    gameMap.placeTower(3, 3);
+    gameMap.placeTower(4, 5);
+    gameMap.placeTower(7, 10);
+
+    // Usar sf::Vector2u para VideoMode
+    sf::RenderWindow window(sf::VideoMode({MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE}), "Genetic Kingdom");
+
+    while (window.isOpen()) {
+        // Nuevo sistema: pollEvent() devuelve std::optional<sf::Event>
+        while (auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
 
-        window.clear();       // clear() sin parámetros (o con clear(color))
-        window.draw(shape);   // draw(expr) solo recibe la forma
+        window.clear();
+
+        for (int row = 0; row < MAP_HEIGHT; ++row) {
+            for (int col = 0; col < MAP_WIDTH; ++col) {
+                sf::RectangleShape rect(sf::Vector2f(TILE_SIZE - 2.0f, TILE_SIZE - 2.0f));
+                rect.setPosition(sf::Vector2f(col * TILE_SIZE, row * TILE_SIZE));
+                rect.setFillColor(getColorForTile(gameMap.getTileType(row, col)));
+                window.draw(rect);
+            }
+        }
+
         window.display();
     }
 
