@@ -5,7 +5,7 @@
       "name": "Run SFML (Linux)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/main",
+      "program": "${workspaceFolder}/bin/main.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
