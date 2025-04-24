@@ -8,40 +8,50 @@ sf::Color getColorForTile(TileType type) {
         case TileType::Entry:   return sf::Color::Green;
         case TileType::Castle:  return sf::Color::Blue;
         case TileType::Tower:   return sf::Color::Red;
-        case TileType::Path:    return sf::Color(128, 128, 128);
+        case TileType::Path:    return sf::Color(139, 69, 19);
         default:                return sf::Color::White;
     }
 }
 
 int main() {
     Map gameMap;
-
-    // Coloca torres para verlas
-    gameMap.placeTower(3, 3);
-    gameMap.placeTower(4, 5);
-    gameMap.placeTower(7, 10);
-
-    // Usar sf::Vector2u para VideoMode
-    sf::RenderWindow window(sf::VideoMode({MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE}), "Genetic Kingdom");
+    sf::RenderWindow window(
+      sf::VideoMode({MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE}),
+      "Genetic Kingdom"
+    );
 
     while (window.isOpen()) {
-        // Nuevo sistema: pollEvent() devuelve std::optional<sf::Event>
-        while (auto event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
+        // pollEvent() devuelve std::optional<sf::Event>
+        while (auto maybeEvent = window.pollEvent()) {
+            auto& event = *maybeEvent;
+
+            // 1) Cerrar ventana
+            if (event.is<sf::Event::Closed>()) {
                 window.close();
-        }
-
-        window.clear();
-
-        for (int row = 0; row < MAP_HEIGHT; ++row) {
-            for (int col = 0; col < MAP_WIDTH; ++col) {
-                sf::RectangleShape rect(sf::Vector2f(TILE_SIZE - 2.0f, TILE_SIZE - 2.0f));
-                rect.setPosition(sf::Vector2f(col * TILE_SIZE, row * TILE_SIZE));
-                rect.setFillColor(getColorForTile(gameMap.getTileType(row, col)));
-                window.draw(rect);
+            }
+            // 2) Clic izquierdo
+            else if (auto mouseEv = event.getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouseEv->button == sf::Mouse::Button::Left) {
+                    sf::Vector2i mp = sf::Mouse::getPosition(window);
+                    int col = mp.x / TILE_SIZE;
+                    int row = mp.y / TILE_SIZE;
+                    gameMap.placeTower(row, col);
+                }
             }
         }
 
+        window.clear();
+        for (int r = 0; r < MAP_HEIGHT; ++r) {
+            for (int c = 0; c < MAP_WIDTH; ++c) {
+                sf::RectangleShape cell({TILE_SIZE - 2.f, TILE_SIZE - 2.f});
+                cell.setPosition({float(c * TILE_SIZE),
+                                  float(r * TILE_SIZE)});
+                cell.setFillColor(getColorForTile(
+                    gameMap.getTileType(r, c)
+                ));
+                window.draw(cell);
+            }
+        }
         window.display();
     }
 

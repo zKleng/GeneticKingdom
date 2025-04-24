@@ -53,6 +53,10 @@ void Map::placeTower(int row, int col) {
         grid[row][col].type = TileType::Tower;
         grid[row][col].walkable = false;
     }
+    else {
+        std::cout << "❌ No se puede colocar torre en (" << row << ", " << col << ") - casilla ocupada o bloqueada.\n";
+    }
+    
 }
 
 TileType Map::getTileType(int row, int col) const {
