@@ -9,17 +9,24 @@ Map::Map() {
     // --- Camino según tu imagen: ---
 
     // Fila superior (fila 0)
-    for (int col = 0; col < 14; ++col)
-        grid[0][col] = MapTile(TileType::Path);
+    for (int col = 1; col < 14; ++col)
+        grid[1][col] = MapTile(TileType::Path);
 
     // Columna 13 descendente (de fila 0 a 5)
-    for (int row = 0; row <= 5; ++row)
+    for (int row = 1; row <= 5; ++row)
         grid[row][13] = MapTile(TileType::Path);
+
+    // Columna 13 descendente (de fila 0 a 5)
+    for (int row = 1; row <= 5; ++row)
+        grid[row][1] = MapTile(TileType::Path);
 
     // Fila media (fila 5) de col 0 a 19
     for (int col = 0; col < 20; ++col)
         grid[5][col] = MapTile(TileType::Path);
 
+    // Columna 13 descendente (de fila 0 a 5)
+    for (int row = 6; row <= 10; ++row)
+        grid[row][1] = MapTile(TileType::Path);
     // Conexiones adicionales
     for (int col = 13; col < 16; ++col) {
         grid[1][col] = MapTile(TileType::Path);
@@ -33,7 +40,7 @@ Map::Map() {
         grid[row][16] = MapTile(TileType::Path);
 
     // Fila inferior (fila 10)
-    for (int col = 0; col < 14; ++col)
+    for (int col = 1; col < 14; ++col)
         grid[10][col] = MapTile(TileType::Path);
 
     // Castillo (destino)
