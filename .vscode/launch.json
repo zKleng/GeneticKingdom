@@ -5,7 +5,7 @@
       "name": "Run SFML (Linux)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/main.exe",
+      "program": "${workspaceFolder}/bin/main",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -20,9 +20,8 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "Build SFML (Linux)"
+      "preLaunchTask": "Build SFML"
     },
-
     {
       "name": "Run SFML (Windows)",
       "type": "cppdbg",
@@ -42,7 +41,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "Build SFML (Windows)"
+      "preLaunchTask": "Build SFML"
     }
   ]
 }
