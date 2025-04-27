@@ -14,7 +14,6 @@ sf::Color getColorForTile(TileType type) {
         default:                return sf::Color::White;
     }
 }
-
 int main() {
     Map gameMap;
     sf::RenderWindow window(
