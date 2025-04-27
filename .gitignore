@@ -4,20 +4,8 @@
 *.obj
 *.o
 
-# Directorios de build
-bin/
-build/
-
 # Archivos SFML runtime
 *.dll
-
-# Archivos temporales
-*.log
-*.tmp
-
-# Configuración personal de VS Code
-.vscode/settings.json
-.vscode/c_cpp_properties.json
 
 # Archivos de sistema
 .DS_Store
