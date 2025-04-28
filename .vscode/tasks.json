@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build SFML",
+      "type": "shell",
+      "command": "g++",
+
+      "windows": {
+        "args": [
+          "${workspaceFolder}/src/main/main.cpp",
+          "${workspaceFolder}/src/map/Map.cpp",
+          "-I${workspaceFolder}/include",
+          "-IC:/SFML-3.0.0/include",
+          "-LC:/SFML-3.0.0/lib",
+          "-lsfml-graphics",
+          "-lsfml-window",
+          "-lsfml-system",
+          "-std=c++17",
+          "-o",
+          "${workspaceFolder}/bin/main.exe"
+        ]
+      },
+
+      "linux": {
+        "args": [
+          "${workspaceFolder}/src/main/main.cpp",
+          "${workspaceFolder}/src/map/Map.cpp",
+          "-I${workspaceFolder}/include",
+          "-std=c++17",
+          "-o",
+          "${workspaceFolder}/bin/main",
+          "-lsfml-graphics",
+          "-lsfml-window",
+          "-lsfml-system"
+        ]
+      },
+
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}
