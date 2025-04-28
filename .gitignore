@@ -1,0 +1,15 @@
+# Ejecutables y binarios
+*.exe
+*.out
+*.obj
+*.o
+main
+# Archivos SFML runtime
+*.dll
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de conflicto de Git
+*.orig
