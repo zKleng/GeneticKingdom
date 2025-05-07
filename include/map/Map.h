@@ -24,8 +24,6 @@ static inline TileType nextLevel(TileType t) {
     }
 }
 
-const int MAP_WIDTH  = 50;
-const int MAP_HEIGHT = 25;
 
 class Map {
 private:

@@ -1,4 +1,6 @@
 #include "../../include/game/TestEnemy.h"
+#include "../../include/game/GameConstants.h"
+
 #include <SFML/Graphics.hpp>
 
 TestEnemy::TestEnemy() {
@@ -13,7 +15,7 @@ TestEnemy::TestEnemy() {
 }
 
 void TestEnemy::draw(sf::RenderWindow& window) {
-    sf::RectangleShape dummy(sf::Vector2f(40.f, 40.f));
+    sf::RectangleShape dummy{ sf::Vector2f(float(TILE_SIZE), float(TILE_SIZE)) };
     dummy.setFillColor(sf::Color::Magenta);
     dummy.setPosition(position);
     window.draw(dummy);

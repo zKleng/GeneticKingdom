@@ -1,5 +1,6 @@
 #include "../../include/map/Map.h"
 #include "../../include/game/TestEnemy.h"
+#include "../../include/game/GameConstants.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -10,12 +11,6 @@
 #include <algorithm>
 #include <iostream>   // para mensajes de fallo
 
-// Constantes de tamaño
-constexpr std::uint32_t TILE_SIZE      = MAP_WIDTH/2;
-constexpr std::uint32_t TOOLBAR_HEIGHT = TILE_SIZE;
-constexpr int           CHAR_SIZE      = 16;
-constexpr std::uint32_t PANEL_WIDTH    = 200u;
-constexpr float         BUILD_SECONDS  = 3.f;
 
 enum class Phase  { Construction, Wave };
 enum class Action { Place, Upgrade };
@@ -130,9 +125,10 @@ int main() {
         if (phase == Phase::Construction && elapsed >= BUILD_SECONDS) {
             phase = Phase::Wave;
             ++generaciones;
+
             // Posición inicial y destino
-            sf::Vector2i entrada(0, MAP_HEIGHT/2);                         // [MAP_HEIGHT/2][0] en términos (col, fila)
-            sf::Vector2i castillo(MAP_WIDTH - 1, MAP_HEIGHT / 2); // suponiendo que el castillo está ahí
+            sf::Vector2i entrada(0, 0);                         // [MAP_HEIGHT/2][0] en términos (col, fila)
+            sf::Vector2i castillo(MAP_WIDTH - 1, MAP_HEIGHT-1); // suponiendo que el castillo está ahí
 
             // Calcular camino con A*
             std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);

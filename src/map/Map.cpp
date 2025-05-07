@@ -1,4 +1,5 @@
 #include "../../include/map/Map.h"
+#include "../../include/game/GameConstants.h"
 
 #include <SFML/Graphics.hpp>
 #include <queue>
@@ -9,10 +10,10 @@ Map::Map() {
     grid.resize(MAP_HEIGHT, std::vector<MapTile>(MAP_WIDTH));
 
     // Entrada
-    grid[MAP_HEIGHT/2][0] = MapTile(TileType::Entry);
+    grid[0][0] = MapTile(TileType::Entry);
 
     // Castillo (destino)
-    grid[MAP_HEIGHT/2][MAP_WIDTH-1] = MapTile(TileType::Castle);
+    grid[MAP_HEIGHT-1][MAP_WIDTH-1] = MapTile(TileType::Castle);
 }
 
 bool Map::placeTower(int row, int col, TileType t, int &oro) {

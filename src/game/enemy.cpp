@@ -1,4 +1,5 @@
 #include "../../include/game/Enemy.h"
+#include "../../include/game/GameConstants.h"
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
@@ -23,8 +24,8 @@ static sf::Vector2f normalize(const sf::Vector2f& v) {
 }
 
 // Convierte una celda del mapa (fila, columna) a posición en píxeles
-static sf::Vector2f cellToPixel(const sf::Vector2i& cell, float tileSize = 40.f) {
-    return sf::Vector2f(cell.x * tileSize, cell.y * tileSize);
+static sf::Vector2f cellToPixel(const sf::Vector2i& cell) {
+    return sf::Vector2f(cell.x * TILE_SIZE, TOOLBAR_HEIGHT + cell.y * TILE_SIZE);
 }
 
 void Enemy::moveEnemy() {
