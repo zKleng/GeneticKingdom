@@ -1,5 +1,8 @@
-#include <SFML/Graphics.hpp>
 #include "../../include/map/Map.h"
+#include "../../include/game/TestEnemy.h"
+
+#include <SFML/Graphics.hpp>
+
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
@@ -8,11 +11,11 @@
 #include <iostream>   // para mensajes de fallo
 
 // Constantes de tamaño
-constexpr std::uint32_t TILE_SIZE      = 40u;
+constexpr std::uint32_t TILE_SIZE      = MAP_WIDTH/2;
 constexpr std::uint32_t TOOLBAR_HEIGHT = TILE_SIZE;
 constexpr int           CHAR_SIZE      = 16;
 constexpr std::uint32_t PANEL_WIDTH    = 200u;
-constexpr float         BUILD_SECONDS  = 120.f;
+constexpr float         BUILD_SECONDS  = 3.f;
 
 enum class Phase  { Construction, Wave };
 enum class Action { Place, Upgrade };
@@ -22,7 +25,7 @@ static std::string formatTime(float seconds) {
     int m = s / 60;  s %= 60;
     std::ostringstream oss;
     oss << std::setw(2) << std::setfill('0') << m
-        << ":" << std::setw(2) << std::setfill('0') << s;
+        << ":" << std::setw(1) << std::setfill('0') << s;
     return oss.str();
 }
 
@@ -48,6 +51,9 @@ static constexpr std::array<TileType,3> towerButtons = {
 int main() {
     Map gameMap;
 
+    // Enemigos activos
+    std::vector<std::unique_ptr<Enemy>> enemigos;
+
     // Ventana
     std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH  * TILE_SIZE + PANEL_WIDTH);
     std::uint32_t winH = static_cast<std::uint32_t>(MAP_HEIGHT * TILE_SIZE + TOOLBAR_HEIGHT);
@@ -55,7 +61,7 @@ int main() {
 
     // Fuente
     sf::Font font;
-    if (!font.openFromFile("resources/arial.ttf"))
+    if (!font.openFromFile("resources/Fonts/arial.ttf"))
         return -1;
 
     // Estado
@@ -63,7 +69,7 @@ int main() {
     Action     action        = Action::Place;
     TileType   selectedTower = TileType::Tower1;
     sf::Clock  phaseClock;
-    int        oro           = 100;
+    int        oro           = 1000;
     int        placedCount   = 0;
     int        upgradeCount  = 0;
     int        generaciones  = 0;
@@ -124,6 +130,25 @@ int main() {
         if (phase == Phase::Construction && elapsed >= BUILD_SECONDS) {
             phase = Phase::Wave;
             ++generaciones;
+            // Posición inicial y destino
+            sf::Vector2i entrada(0, MAP_HEIGHT/2);                         // [MAP_HEIGHT/2][0] en términos (col, fila)
+            sf::Vector2i castillo(MAP_WIDTH - 1, MAP_HEIGHT / 2); // suponiendo que el castillo está ahí
+
+            // Calcular camino con A*
+            std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
+
+            // Crear enemigo de prueba y asignar camino
+            auto enemigo = std::make_unique<TestEnemy>();
+            enemigo->setPath(camino);
+            enemigos.push_back(std::move(enemigo));
+
+        }
+
+        //enemigos moviendose usando A*
+        if (phase == Phase::Wave) {
+            for (auto& e : enemigos) {
+                e->moveEnemy();
+            }
         }
 
         // Dibujado
@@ -152,6 +177,7 @@ int main() {
         bool upActive = (action==Action::Upgrade);
         upBtn.setFillColor(upActive ? sf::Color(150,150,150) : sf::Color::Yellow);
         window.draw(upBtn);
+
         // Etiqueta "U"
         sf::Text upLabel(font, "U", CHAR_SIZE);
         upLabel.setFillColor(sf::Color::Black);
@@ -220,6 +246,12 @@ int main() {
             stat.setPosition({ x0, y0 + dy*4 }); window.draw(stat);
             stat.setString("Mutations: " + std::to_string(mutacionesAcumuladas));
             stat.setPosition({ x0, y0 + dy*5 }); window.draw(stat);
+        }
+
+        if (phase == Phase::Wave) {
+            for (auto& e : enemigos) {
+                e->draw(window);
+            }
         }
 
         window.display();

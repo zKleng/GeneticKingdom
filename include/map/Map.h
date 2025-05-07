@@ -4,6 +4,8 @@
 #include <iostream>
 #include "MapTile.h"
 
+#include <SFML/Graphics.hpp>
+
 static inline int tileCost(TileType t) {
     switch (t) {
         case TileType::Tower1: return 10;
@@ -22,8 +24,8 @@ static inline TileType nextLevel(TileType t) {
     }
 }
 
-const int MAP_WIDTH  = 20;
-const int MAP_HEIGHT = 11;
+const int MAP_WIDTH  = 50;
+const int MAP_HEIGHT = 25;
 
 class Map {
 private:
@@ -43,4 +45,7 @@ public:
 
     // Para debug por consola
     void printMap() const;
+
+    // Camino calculado usando A*
+    std::vector<sf::Vector2i> findPathAStar(sf::Vector2i inicio, sf::Vector2i destino) const;
 };

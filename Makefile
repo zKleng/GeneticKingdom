@@ -3,7 +3,7 @@ CXX      = g++
 CXXFLAGS = -std=c++17 -Iinclude -I/usr/local/opt/sfml/include
 LDFLAGS  = -L/usr/local/opt/sfml/lib -lsfml-graphics -lsfml-window -lsfml-system
 
-SRC      = src/main/main.cpp src/map/Map.cpp
+SRC      = src/main/main.cpp src/map/Map.cpp src/game/enemy.cpp src/game/TestEnemy.cpp
 OBJ_DIR  = obj
 BIN_DIR  = bin
 TARGET   = $(BIN_DIR)/GeneticKingdom
