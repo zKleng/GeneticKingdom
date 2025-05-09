@@ -16,11 +16,11 @@ public:
     TileType type;
     bool     walkable;
 
-    MapTile(TileType t = TileType::Empty)
-      : type(t),
+    MapTile(TileType tile = TileType::Empty)
+      : type(tile),
         // Las tres torres bloquean el paso
-        walkable(!(t == TileType::Tower1 ||
-                   t == TileType::Tower2 ||
-                   t == TileType::Tower3))
+        walkable(!(tile == TileType::Tower1 ||
+                   tile == TileType::Tower2 ||
+                   tile == TileType::Tower3))
     {}
 };

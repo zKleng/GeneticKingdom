@@ -1,50 +1,19 @@
 #include "../../include/map/Map.h"
+#include "../../include/game/GameConstants.h"
+
+#include <SFML/Graphics.hpp>
+#include <queue>
+#include <unordered_map>
+#include <cmath>
 
 Map::Map() {
     grid.resize(MAP_HEIGHT, std::vector<MapTile>(MAP_WIDTH));
 
     // Entrada
-    grid[5][0] = MapTile(TileType::Entry);
-
-    // --- Camino según tu imagen: ---
-
-    // Fila superior (fila 0)
-    for (int col = 1; col < 14; ++col)
-        grid[1][col] = MapTile(TileType::Path);
-
-    // Columna 13 descendente (de fila 0 a 5)
-    for (int row = 1; row <= 5; ++row)
-        grid[row][13] = MapTile(TileType::Path);
-
-    // Columna 13 descendente (de fila 0 a 5)
-    for (int row = 1; row <= 5; ++row)
-        grid[row][1] = MapTile(TileType::Path);
-
-    // Fila media (fila 5) de col 0 a 19
-    for (int col = 0; col < 20; ++col)
-        grid[5][col] = MapTile(TileType::Path);
-
-    // Columna 13 descendente (de fila 0 a 5)
-    for (int row = 6; row <= 10; ++row)
-        grid[row][1] = MapTile(TileType::Path);
-    // Conexiones adicionales
-    for (int col = 13; col < 16; ++col) {
-        grid[1][col] = MapTile(TileType::Path);
-        grid[9][col] = MapTile(TileType::Path);
-    }
-    for (int row = 6; row <= 9; ++row) {
-        grid[row][13] = MapTile(TileType::Path);
-        grid[row][16] = MapTile(TileType::Path);
-    }
-    for (int row = 1; row <= 4; ++row)
-        grid[row][16] = MapTile(TileType::Path);
-
-    // Fila inferior (fila 10)
-    for (int col = 1; col < 14; ++col)
-        grid[10][col] = MapTile(TileType::Path);
+    grid[0][0] = MapTile(TileType::Entry);
 
     // Castillo (destino)
-    grid[5][19] = MapTile(TileType::Castle);
+    grid[MAP_HEIGHT-1][MAP_WIDTH-1] = MapTile(TileType::Castle);
 }
 
 bool Map::placeTower(int row, int col, TileType t, int &oro) {
@@ -101,4 +70,70 @@ void Map::printMap() const {
         }
         std::cout << "\n";
     }
+}
+
+
+//Implementacion del algoritmo A* que usan los enemigos para encontrar el camino entre la salida y el castillo
+struct Nodo {
+    sf::Vector2i pos;
+    float g;  // costo desde el inicio
+    float f;  // g + heurística
+    bool operator>(const Nodo& o) const { return f > o.f; }
+};
+
+static float heuristic(sf::Vector2i a, sf::Vector2i b) {
+    return std::abs(a.x - b.x) + std::abs(a.y - b.y); // Manhattan
+}
+
+std::vector<sf::Vector2i> Map::findPathAStar(sf::Vector2i inicio, sf::Vector2i destino) const {
+    std::priority_queue<Nodo, std::vector<Nodo>, std::greater<Nodo>> abiertos;
+    std::unordered_map<int, sf::Vector2i> cameFrom;
+    std::unordered_map<int, float> costSoFar;
+
+    auto hash = [](sf::Vector2i v) { return v.y * MAP_WIDTH + v.x; };
+
+    abiertos.push({inicio, 0.f, heuristic(inicio, destino)});
+    costSoFar[hash(inicio)] = 0.f;
+
+    std::vector<sf::Vector2i> direcciones = {
+        {1,0}, {-1,0}, {0,1}, {0,-1}
+    };
+
+    while (!abiertos.empty()) {
+        Nodo actual = abiertos.top();
+        abiertos.pop();
+
+        if (actual.pos == destino) break;
+
+        for (auto d : direcciones) {
+            sf::Vector2i next = actual.pos + d;
+
+            if (next.x < 0 || next.x >= MAP_WIDTH || next.y < 0 || next.y >= MAP_HEIGHT)
+                continue;
+
+            if (!grid[next.y][next.x].walkable && grid[next.y][next.x].type != TileType::Castle)
+                continue;
+
+            float newCost = costSoFar[hash(actual.pos)] + 1.f;
+            if (!costSoFar.count(hash(next)) || newCost < costSoFar[hash(next)]) {
+                costSoFar[hash(next)] = newCost;
+                float priority = newCost + heuristic(next, destino);
+                abiertos.push({next, newCost, priority});
+                cameFrom[hash(next)] = actual.pos;
+            }
+        }
+    }
+
+    // Reconstrucción del camino
+    std::vector<sf::Vector2i> path;
+    sf::Vector2i current = destino;
+    while (current != inicio) {
+        path.push_back(current);
+        if (cameFrom.find(hash(current)) == cameFrom.end()) {
+            path.clear(); break; // no hay camino
+        }
+        current = cameFrom[hash(current)];
+    }
+    std::reverse(path.begin(), path.end());
+    return path;
 }
