@@ -1,6 +1,9 @@
 #include "../../include/map/Map.h"
-#include "../../include/game/TestEnemy.h"
 #include "../../include/game/GameConstants.h"
+#include "../../include/game/Ogro.h"
+#include "../../include/game/ElfoOscuro.h"
+#include "../../include/game/Harpia.h"
+#include "../../include/game/Mercenario.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -47,7 +50,7 @@ int main() {
     Map gameMap;
 
     // Enemigos activos
-    std::vector<std::unique_ptr<Enemy>> enemigos;
+    std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
 
     // Ventana
     std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH  * TILE_SIZE + PANEL_WIDTH);
@@ -133,10 +136,32 @@ int main() {
             // Calcular camino con A*
             std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
 
-            // Crear enemigo de prueba y asignar camino
-            auto enemigo = std::make_unique<TestEnemy>();
-            enemigo->setPath(camino);
-            enemigos.push_back(std::move(enemigo));
+            // Creacion de enemigos
+
+            // Creacion ogros
+            for (int i = 0; i < 3; ++i) {
+                auto enemigo = std::make_unique<Ogro>();
+                enemigo->setPath(camino);
+                enemigos.push_back(std::move(enemigo));
+            }
+
+            for (int i = 0; i < 3; ++i) {
+                auto enemigo = std::make_unique<ElfoOscuro>();
+                enemigo->setPath(camino);
+                enemigos.push_back(std::move(enemigo));
+            }
+
+            for (int i = 0; i < 3; ++i) {
+                auto enemigo = std::make_unique<Harpia>();
+                enemigo->setPath(camino);
+                enemigos.push_back(std::move(enemigo));
+            }
+
+            for (int i = 0; i < 3; ++i) {
+                auto enemigo = std::make_unique<Mercenario>();
+                enemigo->setPath(camino);
+                enemigos.push_back(std::move(enemigo));
+            }
 
         }
 

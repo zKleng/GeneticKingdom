@@ -1,10 +1,9 @@
 #pragma once
 #include "Enemy.h"
-#include <SFML/Graphics.hpp>
 
-class TestEnemy : public Enemy {
+class Ogro : public Enemy {
 public:
-    TestEnemy();
+    Ogro(); // Constructor
 
     void draw(sf::RenderWindow& window) override;
 };
