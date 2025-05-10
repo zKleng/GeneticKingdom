@@ -130,6 +130,19 @@ GeneticKingdom/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/build
 .PHONY : GeneticKingdom/fast
 
+#=============================================================================
+# Target rules for targets named run
+
+# Build rule for target.
+run: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run
+.PHONY : run
+
+# fast build rule for target.
+run/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
+.PHONY : run/fast
+
 src/game/ElfoOscuro.o: src/game/ElfoOscuro.cpp.o
 .PHONY : src/game/ElfoOscuro.o
 
@@ -330,6 +343,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... run"
 	@echo "... GeneticKingdom"
 	@echo "... src/game/ElfoOscuro.o"
 	@echo "... src/game/ElfoOscuro.i"
