@@ -13,3 +13,12 @@ Thumbs.db
 
 # Archivos de conflicto de Git
 *.orig
+
+
+# Ignorar CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+bin/

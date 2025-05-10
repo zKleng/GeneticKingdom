@@ -21,6 +21,11 @@ In /build:
     -make
     -make run
 
+To delete compiled file in build and bin:
+In /build:
+    -make clean-all
+
+
 Optional running method, in the root:
 Linux & MacOs: ./bin/GeneticKingdom
 Windows: .\bin\GeneticKingdom.exe

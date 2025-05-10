@@ -142,4 +142,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/GeneticKingdom.dir/DependInfo.cmake"
   "CMakeFiles/run.dir/DependInfo.cmake"
+  "CMakeFiles/clean-all.dir/DependInfo.cmake"
   )
