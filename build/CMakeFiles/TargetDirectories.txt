@@ -1,0 +1,3 @@
+/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/GeneticKingdom.dir
+/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/edit_cache.dir
+/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/rebuild_cache.dir

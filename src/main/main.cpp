@@ -145,18 +145,21 @@ int main() {
                 enemigos.push_back(std::move(enemigo));
             }
 
+            // Creacion elfos
             for (int i = 0; i < 3; ++i) {
                 auto enemigo = std::make_unique<ElfoOscuro>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
+            // Creacion harpias
             for (int i = 0; i < 3; ++i) {
                 auto enemigo = std::make_unique<Harpia>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
+            // Creacion mercenarios
             for (int i = 0; i < 3; ++i) {
                 auto enemigo = std::make_unique<Mercenario>();
                 enemigo->setPath(camino);
