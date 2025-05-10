@@ -222,6 +222,9 @@ GeneticKingdom_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 GeneticKingdom_SOURCE_DIR:STATIC=/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom
 
+//The directory containing a CMake configuration file for SFML.
+SFML_DIR:PATH=SFML_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries

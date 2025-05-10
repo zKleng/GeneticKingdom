@@ -13,6 +13,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.31.6/CMakeSystem.cmake"
   "CMakeFiles/VerifyGlobs.cmake"
   "CMakeFiles/cmake.verify_globs"
+  "/usr/local/lib/cmake/SFML/SFMLConfigVersion.cmake"
   "/usr/local/share/cmake/Modules/CMakeCCompiler.cmake.in"
   "/usr/local/share/cmake/Modules/CMakeCCompilerABI.c"
   "/usr/local/share/cmake/Modules/CMakeCInformation.cmake"
