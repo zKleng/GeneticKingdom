@@ -28,7 +28,6 @@ void Tower::draw(sf::RenderWindow& window) {
     if (hasSprite) {
         sprite.setPosition(position);
         window.draw(sprite);
-        std::cout << "[DRAW] Sprite en: " << position.x << "," << position.y << "\n";
     } else {
         sf::RectangleShape dummy{ sf::Vector2f(float(TILE_SIZE), float(TILE_SIZE)) };
         dummy.setPosition(position);

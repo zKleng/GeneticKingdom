@@ -14,7 +14,7 @@
 
 //cantidad de casillas de la matriz
 const int MAP_WIDTH  = 50;
-const int MAP_HEIGHT = 30;
+const int MAP_HEIGHT = 35;
 
 // Constantes de tamaño
 constexpr std::uint32_t TILE_SIZE      = MAP_WIDTH/2;

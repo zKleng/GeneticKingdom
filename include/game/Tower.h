@@ -43,11 +43,10 @@ public:
         if (texture.loadFromFile(path)) {
             sprite.setTexture(texture, true);  
             sprite.setScale(sf::Vector2f(
-                float(TILE_SIZE) / texture.getSize().x,
-                float(TILE_SIZE) / texture.getSize().y
+                float(TILE_SIZE) / texture.getSize().x * 2.5,
+                float(TILE_SIZE) / texture.getSize().y * 2.5
             ));
             hasSprite = true;
-            std::cerr << "Textura cargada: " << path << '\n';
         } else {
             hasSprite = false;
             std::cerr << "[ERROR] No se pudo cargar la textura: " << path << '\n';
