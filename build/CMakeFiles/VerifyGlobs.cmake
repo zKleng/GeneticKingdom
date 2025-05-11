@@ -5,6 +5,7 @@ cmake_policy(SET CMP0009 NEW)
 # SOURCES at CMakeLists.txt:11 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/*.cpp")
 set(OLD_GLOB
+  "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Arquero.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/ElfoOscuro.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Enemy.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Harpia.cpp"

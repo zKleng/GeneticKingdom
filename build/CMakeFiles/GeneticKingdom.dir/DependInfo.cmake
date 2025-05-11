@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Arquero.cpp" "CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.o" "gcc" "CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.o.d"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/ElfoOscuro.cpp" "CMakeFiles/GeneticKingdom.dir/src/game/ElfoOscuro.cpp.o" "gcc" "CMakeFiles/GeneticKingdom.dir/src/game/ElfoOscuro.cpp.o.d"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Enemy.cpp" "CMakeFiles/GeneticKingdom.dir/src/game/Enemy.cpp.o" "gcc" "CMakeFiles/GeneticKingdom.dir/src/game/Enemy.cpp.o.d"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Harpia.cpp" "CMakeFiles/GeneticKingdom.dir/src/game/Harpia.cpp.o" "gcc" "CMakeFiles/GeneticKingdom.dir/src/game/Harpia.cpp.o.d"

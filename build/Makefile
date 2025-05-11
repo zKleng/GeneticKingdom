@@ -156,6 +156,30 @@ clean-all/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/clean-all.dir/build.make CMakeFiles/clean-all.dir/build
 .PHONY : clean-all/fast
 
+src/game/Arquero.o: src/game/Arquero.cpp.o
+.PHONY : src/game/Arquero.o
+
+# target to build an object file
+src/game/Arquero.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.o
+.PHONY : src/game/Arquero.cpp.o
+
+src/game/Arquero.i: src/game/Arquero.cpp.i
+.PHONY : src/game/Arquero.i
+
+# target to preprocess a source file
+src/game/Arquero.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.i
+.PHONY : src/game/Arquero.cpp.i
+
+src/game/Arquero.s: src/game/Arquero.cpp.s
+.PHONY : src/game/Arquero.s
+
+# target to generate assembly for a file
+src/game/Arquero.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.s
+.PHONY : src/game/Arquero.cpp.s
+
 src/game/ElfoOscuro.o: src/game/ElfoOscuro.cpp.o
 .PHONY : src/game/ElfoOscuro.o
 
@@ -359,6 +383,9 @@ help:
 	@echo "... clean-all"
 	@echo "... run"
 	@echo "... GeneticKingdom"
+	@echo "... src/game/Arquero.o"
+	@echo "... src/game/Arquero.i"
+	@echo "... src/game/Arquero.s"
 	@echo "... src/game/ElfoOscuro.o"
 	@echo "... src/game/ElfoOscuro.i"
 	@echo "... src/game/ElfoOscuro.s"

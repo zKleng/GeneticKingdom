@@ -19,4 +19,4 @@ constexpr std::uint32_t TILE_SIZE      = MAP_WIDTH/2;
 constexpr std::uint32_t TOOLBAR_HEIGHT = TILE_SIZE;
 constexpr int           CHAR_SIZE      = 16;
 constexpr std::uint32_t PANEL_WIDTH    = 200u;
-constexpr float         BUILD_SECONDS  = 3.f;
+constexpr float         BUILD_SECONDS  = 10.f;

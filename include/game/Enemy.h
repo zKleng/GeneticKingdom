@@ -20,6 +20,8 @@ public:
     //virtual void deleteEnemy(); funcion que elemina de la memoria cada enemigo que muere
 
     void setPath(const std::vector<sf::Vector2i>& camino);
+    virtual sf::Vector2f getPosition() const;
+
 
 protected:
     // Atributos que tendran las subclases de enemigos

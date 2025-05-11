@@ -71,3 +71,7 @@ void Enemy::setPath(const std::vector<sf::Vector2i>& camino) {
         sprite.setPosition(position);
     }
 }
+
+sf::Vector2f Enemy::getPosition() const {
+    return position;
+}

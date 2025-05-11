@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/bin/GeneticKingdom"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/bin/GeneticKingdom.pdb"
+  "CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.o"
+  "CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.o.d"
   "CMakeFiles/GeneticKingdom.dir/src/game/ElfoOscuro.cpp.o"
   "CMakeFiles/GeneticKingdom.dir/src/game/ElfoOscuro.cpp.o.d"
   "CMakeFiles/GeneticKingdom.dir/src/game/Enemy.cpp.o"

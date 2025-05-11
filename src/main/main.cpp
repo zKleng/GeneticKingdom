@@ -4,6 +4,7 @@
 #include "../../include/game/ElfoOscuro.h"
 #include "../../include/game/Harpia.h"
 #include "../../include/game/Mercenario.h"
+#include "../../include/game/Arquero.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -49,8 +50,10 @@ static constexpr std::array<TileType,3> towerButtons = {
 int main() {
     Map gameMap;
 
-    // Enemigos activos
+    // Enemigos y torres activas
     std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
+    std::vector<std::unique_ptr<Tower>> torres;
+
 
     // Ventana
     std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH  * TILE_SIZE + PANEL_WIDTH);
@@ -75,8 +78,14 @@ int main() {
     float      fitnessActual   = 0.f;
     float      probMutacion    = 0.05f;
     int        mutacionesAcumuladas = 0;
+    
+    sf::Clock deltaClock;
 
     while (window.isOpen()) {
+
+        //timer que usan las torres para atacar
+        float deltaTime = deltaClock.restart().asSeconds();
+
         // Eventos
         while (auto mev = window.pollEvent()) {
             if (mev->is<sf::Event::Closed>()) {
@@ -108,6 +117,13 @@ int main() {
                         if (action == Action::Place) {
                             if (gameMap.placeTower(row, col, selectedTower, oro)) {
                                 ++placedCount;
+                            
+                                if (selectedTower == TileType::Tower1) {
+                                    auto torre = std::make_unique<ArqueroTower>();
+                                    torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
+                                    torres.push_back(std::move(torre));
+                                }
+                            
                             } else {
                                 std::cout << "Cannot place tower at ("<<row<<","<<col<<")\n";
                             }
@@ -139,28 +155,28 @@ int main() {
             // Creacion de enemigos
 
             // Creacion ogros
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 auto enemigo = std::make_unique<Ogro>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion elfos
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 auto enemigo = std::make_unique<ElfoOscuro>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion harpias
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 auto enemigo = std::make_unique<Harpia>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion mercenarios
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 auto enemigo = std::make_unique<Mercenario>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
@@ -276,6 +292,14 @@ int main() {
             for (auto& e : enemigos) {
                 e->draw(window);
             }
+
+            for (auto& torre : torres) {
+                torre->attackEnemy(enemigos, deltaTime, oro, enemigosMuertos);
+            }
+        }
+
+        for (auto& torre : torres) {
+            torre->draw(window);
         }
 
         window.display();
