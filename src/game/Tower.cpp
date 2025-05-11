@@ -28,14 +28,15 @@ void Tower::draw(sf::RenderWindow& window) {
     if (hasSprite) {
         sprite.setPosition(position);
         window.draw(sprite);
+        std::cout << "[DRAW] Sprite en: " << position.x << "," << position.y << "\n";
     } else {
         sf::RectangleShape dummy{ sf::Vector2f(float(TILE_SIZE), float(TILE_SIZE)) };
-        dummy.setFillColor(sf::Color::Red);
         dummy.setPosition(position);
+        dummy.setFillColor(sf::Color::Red); // fallback visible
         window.draw(dummy);
+        std::cout << "[DRAW] Dibujo fallback\n";
     }
 }
-
 void Tower::placeTower() {
     if (texture.getSize().x > 0 && texture.getSize().y > 0) {
         sprite.setTexture(texture);

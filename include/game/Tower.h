@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Enemy.h"
+#include "../../include/game/GameConstants.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -21,7 +22,8 @@ public:
     virtual void placeTower();
     virtual bool upgradeTower(int& oro);
     virtual bool canAttack(float deltaTime);
-    
+ 
+
     sf::Vector2f getPosition() const;
 
     void setGridPosition(int r, int c) {
@@ -34,6 +36,23 @@ public:
     }
 
     int getLevel() const { return towerLevel; }
+
+    //carga sprites
+    void loadTexture() {
+        std::string path = getTexture(towerLevel);
+        if (texture.loadFromFile(path)) {
+            sprite.setTexture(texture, true);  
+            sprite.setScale(sf::Vector2f(
+                float(TILE_SIZE) / texture.getSize().x,
+                float(TILE_SIZE) / texture.getSize().y
+            ));
+            hasSprite = true;
+            std::cerr << "Textura cargada: " << path << '\n';
+        } else {
+            hasSprite = false;
+            std::cerr << "[ERROR] No se pudo cargar la textura: " << path << '\n';
+        }
+    }
 
 protected:
     // Atributos que tendran las subclases de enemigos
@@ -62,4 +81,7 @@ protected:
 
     int row = -1;
     int col = -1;
+
+    //cargar sprites
+    virtual std::string getTexture(int level) = 0;
 };
