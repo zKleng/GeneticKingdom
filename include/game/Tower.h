@@ -14,15 +14,26 @@ public:
     Tower();//constructor
     virtual ~Tower() = default;// Destructor virtual para polimorfismo
 
-    // Métodos para la clase enemy
+    // Métodos para la clase torre
     virtual void attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float deltaTime, int& oro, int& enemigosMuertos) = 0;
     virtual void draw(sf::RenderWindow& window);
     virtual void setPosition(const sf::Vector2f& pos);
     virtual void placeTower();
     virtual bool upgradeTower(int& oro);
     virtual bool canAttack(float deltaTime);
+    
+    sf::Vector2f getPosition() const;
 
+    void setGridPosition(int r, int c) {
+        row = r;
+        col = c;
+    }
+    
+    std::pair<int, int> getGridPosition() const {
+        return {row, col};
+    }
 
+    int getLevel() const { return towerLevel; }
 
 protected:
     // Atributos que tendran las subclases de enemigos
@@ -30,7 +41,7 @@ protected:
     std::string specialAttack;
 
     int towerLevel;
-    int towerMaxLevel = 3;
+    int towerMaxLevel = 4;
 
     float damage;
     float range;
@@ -49,5 +60,6 @@ protected:
     sf::Sprite sprite;
     bool hasSprite = false; // Indica si se cargó una textura
 
-    
+    int row = -1;
+    int col = -1;
 };

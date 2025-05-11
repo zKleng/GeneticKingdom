@@ -19,7 +19,7 @@ Tower::Tower()
     goldPerKill = 0.f;
 
     // Inicializar los costos de mejora a 0 por defecto
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         upgradeCosts[i] = 0.f;
     }
 }
@@ -77,4 +77,9 @@ bool Tower::canAttack(float deltaTime) {
 void Tower::setPosition(const sf::Vector2f& pos) {
     position = pos;
 }
+
+sf::Vector2f Tower::getPosition() const {
+    return position;
+}
+
 

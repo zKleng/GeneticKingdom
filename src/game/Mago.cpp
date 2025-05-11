@@ -28,51 +28,86 @@ void MagoTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float
     if (cooldown > 0.f)
         return;
 
-    bool attacked = false;
-
-
-    auto it = enemigos.begin();
-    while (it != enemigos.end()) {
-        Enemy* e = it->get();
-        float dx = e->getPosition().x - position.x;
-        float dy = e->getPosition().y - position.y;
-        float dist = std::sqrt(dx * dx + dy * dy);
-
-        if (dist <= range) {
-            float dañoFinal = damage;
-
-            if (specialCooldown <= 0.f && (rand() % 100) < 20) {
-                dañoFinal *= 1.5f;
-                specialCooldown = specialAttackRechargeTime;
-            }
-
-            std::cout << "[Torre Artillero] Daño aplicado: " << dañoFinal
-                      << " al enemigo en posición: (" 
-                      << static_cast<int>(e->getPosition().x) << ", "
-                      << static_cast<int>(e->getPosition().y) << ")\n";
-
-            e->receiveDamage(dañoFinal, "flecha");
-            attacked = true;
-
-            if (e->getStats() <= 0.f) {
-                oro += static_cast<int>(goldPerKill);
-                enemigosMuertos++;
-                it = enemigos.erase(it);// eliminar el enemigo
-                continue; 
+        for (auto it = enemigos.begin(); it != enemigos.end(); ++it) {
+            Enemy* e = it->get();
+    
+            // Calcular distancia entre torre y enemigo
+            float dx = e->getPosition().x - position.x;
+            float dy = e->getPosition().y - position.y;
+            float dist = std::sqrt(dx * dx + dy * dy);
+    
+            if (dist <= range) {
+                // Calcular daño
+                float dañoFinal = damage;
+    
+                if (specialCooldown <= 0.f && (rand() % 100) < static_cast<int>(probabilidadHabilidad * 100)) {
+                    dañoFinal *= 1.5f;
+                    specialCooldown = specialAttackRechargeTime;
+                }
+    
+                // Aplicar daño
+                std::cout << "[Torre mago] Ataco con magia al enemigo en posición: (" 
+                          << static_cast<int>(e->getPosition().x) << ", "
+                          << static_cast<int>(e->getPosition().y) << ")\n";
+    
+                e->receiveDamage(dañoFinal, "magia");
+    
+                // Si muere, eliminarlo
+                if (e->getStats() <= 0.f) {
+                    oro += static_cast<int>(goldPerKill);
+                    enemigosMuertos++;
+                    enemigos.erase(it);
+                }
+    
+                cooldown = attackReloadTime;  // reiniciar cooldown tras atacar
+                break; // atacar solo a uno
             }
         }
+}
 
-        ++it;
+bool MagoTower::upgradeTower(int& oro) {
+    if (towerLevel >= towerMaxLevel) return false;
+
+    float cost = upgradeCosts[towerLevel - 1];
+    if (oro >= cost) {
+        oro -= cost;
+        ++towerLevel;
+
+        switch (towerLevel) {
+            case 2:
+                damage += 50.f;
+                range += 15.f;
+                break;
+            case 3:
+                damage += 75.f;
+                range += 20.f;
+                break;
+            case 4:
+            damage += 100.f;
+            range += 25.f;
+            break;
+        }
+
+        return true;
     }
 
-    if (attacked) {
-        cooldown = attackReloadTime; // resetear cooldown de ataque
-    }
+    return false;
 }
 
 void MagoTower::draw(sf::RenderWindow& window) {
     sf::RectangleShape dummy(sf::Vector2f(static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE)));
-    dummy.setFillColor(sf::Color::Magenta);
     dummy.setPosition(position);
+    
+    // Cambiar color según el nivel
+    if (towerLevel == 1)
+        dummy.setFillColor(sf::Color(9, 69, 19));  // café oscuro (nivel base)
+    else if (towerLevel == 2)
+        dummy.setFillColor(sf::Color(55, 165, 0));  // naranja (mejorado 1 vez)
+    else if (towerLevel == 3)
+        dummy.setFillColor(sf::Color::Green);          // rojo (mejorado 2 veces)
+    else if (towerLevel == 4)
+        dummy.setFillColor(sf::Color::Yellow);      // magenta (mejorado 3 veces)
+                    
+    
     window.draw(dummy);
 }
