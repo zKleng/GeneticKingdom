@@ -18,6 +18,8 @@ MagoTower::MagoTower() {
     upgradeCosts[0] = 30.f;
     upgradeCosts[1] = 50.f;
     upgradeCosts[2] = 80.f;
+
+    loadTexture(); // cargar textura de la torre
 }
 
 void MagoTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float deltaTime, int& oro, int& enemigosMuertos) {
@@ -72,6 +74,7 @@ bool MagoTower::upgradeTower(int& oro) {
     if (oro >= cost) {
         oro -= cost;
         ++towerLevel;
+        loadTexture();
 
         switch (towerLevel) {
             case 2:
@@ -95,19 +98,15 @@ bool MagoTower::upgradeTower(int& oro) {
 }
 
 void MagoTower::draw(sf::RenderWindow& window) {
-    sf::RectangleShape dummy(sf::Vector2f(static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE)));
-    dummy.setPosition(position);
-    
-    // Cambiar color según el nivel
-    if (towerLevel == 1)
-        dummy.setFillColor(sf::Color(9, 69, 19));  // café oscuro (nivel base)
-    else if (towerLevel == 2)
-        dummy.setFillColor(sf::Color(55, 165, 0));  // naranja (mejorado 1 vez)
-    else if (towerLevel == 3)
-        dummy.setFillColor(sf::Color::Green);          // rojo (mejorado 2 veces)
-    else if (towerLevel == 4)
-        dummy.setFillColor(sf::Color::Yellow);      // magenta (mejorado 3 veces)
-                    
-    
-    window.draw(dummy);
+    Tower::draw(window); 
+}
+
+std::string MagoTower::getTexture(int level) {
+    switch (level) {
+        case 1: return "resources/TowerSprites/MagoTowerSprite1.png";
+        case 2: return "resources/TowerSprites/MagoTowerSprite2.png";
+        case 3: return "resources/TowerSprites/MagoTowerSprite3.png";
+        case 4: return "resources/TowerSprites/MagoTowerSprite4.png";
+        default: return "resources/TowerSprites/MagoTowerSprite1.png"; // fallback
+    }
 }

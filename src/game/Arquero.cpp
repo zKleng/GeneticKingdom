@@ -18,6 +18,9 @@ ArqueroTower::ArqueroTower() {
     upgradeCosts[0] = 25.f;
     upgradeCosts[1] = 50.f;
     upgradeCosts[2] = 75.f;
+
+    loadTexture(); // cargar textura de la torre
+
 }
 
 void ArqueroTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float deltaTime, int& oro, int& enemigosMuertos) {
@@ -72,6 +75,7 @@ bool ArqueroTower::upgradeTower(int& oro) {
     if (oro >= cost) {
         oro -= cost;
         ++towerLevel;
+        loadTexture();
 
         switch (towerLevel) {
             case 2:
@@ -94,21 +98,16 @@ bool ArqueroTower::upgradeTower(int& oro) {
     return false;
 }
 
-
 void ArqueroTower::draw(sf::RenderWindow& window) {
-    sf::RectangleShape dummy(sf::Vector2f(static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE)));
-    dummy.setPosition(position);
-    
-    // Cambiar color según el nivel
-    if (towerLevel == 1)
-        dummy.setFillColor(sf::Color(9, 9, 19));  // café oscuro (nivel base)
-    else if (towerLevel == 2)
-        dummy.setFillColor(sf::Color(55, 65, 200));  // naranja (mejorado 1 vez)
-    else if (towerLevel == 3)
-        dummy.setFillColor(sf::Color::Blue);          // rojo (mejorado 2 veces)
-    else if (towerLevel == 4)
-        dummy.setFillColor(sf::Color::Cyan);      // magenta (mejorado 3 veces)
-                    
-    
-    window.draw(dummy);
+    Tower::draw(window); 
+}
+
+std::string ArqueroTower::getTexture(int level) {
+    switch (level) {
+        case 1: return "resources/TowerSprites/ArqueroTowerSprite1.png";
+        case 2: return "resources/TowerSprites/ArqueroTowerSprite2.png";
+        case 3: return "resources/TowerSprites/ArqueroTowerSprite3.png";
+        case 4: return "resources/TowerSprites/ArqueroTowerSprite4.png";
+        default: return "resources/TowerSprites/ArqueroTowerSprite1.png"; // fallback
+    }
 }
