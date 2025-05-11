@@ -7,9 +7,9 @@
 Ogro::Ogro() {
     // Atributos base
     health = 150.f;
-    speed = 0.5f;  // Lento
+    speed = 0.15f;  // Lento
 
-    resistanceArrow     = 0.6f;  // 60% resistencia
+    resistanceArrow     = 0.4f;  // 40% resistencia
     resistanceMagic     = 0.0f;  // sin resistencia
     resistanceArtillery = 0.0f;  // sin resistencia
 

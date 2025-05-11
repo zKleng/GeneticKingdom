@@ -7,11 +7,11 @@
 Mercenario::Mercenario() {
     // Atributos base
     health = 150.f;
-    speed = 0.65f;  // intermedio
+    speed = 0.2f;  // intermedio
 
-    resistanceArrow     = 0.4f;  // 40% resistencia
+    resistanceArrow     = .75f;  // 100% resistencia
     resistanceMagic     = 0.0f;  // sin resistencia
-    resistanceArtillery = 0.4f;  // 40% resistencia
+    resistanceArtillery = .75f;  // 100% resistencia
 
     // Cargar textura (opcional)
     if (!texture.loadFromFile("resources/EnemySprites/HarpiaSprite.png")) {

@@ -7,10 +7,10 @@
 ElfoOscuro::ElfoOscuro() {
     // Atributos base
     health = 150.f;
-    speed = 1.f;  // Lento
+    speed = 0.3f;  // Lento
 
     resistanceArrow     = 0.0f;  // sin resistencia
-    resistanceMagic     = 0.5f;  // 50% resistencia
+    resistanceMagic     = 0.8f;  // 80% resistencia
     resistanceArtillery = 0.0f;  // sin resistencia
 
     // Cargar textura (opcional)

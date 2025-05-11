@@ -1,5 +1,0 @@
-/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/GeneticKingdom.dir
-/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/run.dir
-/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/clean-all.dir
-/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/edit_cache.dir
-/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/build/CMakeFiles/rebuild_cache.dir

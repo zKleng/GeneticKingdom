@@ -10,10 +10,10 @@ Map::Map() {
     grid.resize(MAP_HEIGHT, std::vector<MapTile>(MAP_WIDTH));
 
     // Entrada
-    grid[0][0] = MapTile(TileType::Entry);
+    grid[ENEMY_ENTRY_X][ENEMY_ENTRY_Y] = MapTile(TileType::Entry);
 
     // Castillo (destino)
-    grid[MAP_HEIGHT-1][MAP_WIDTH-1] = MapTile(TileType::Castle);
+    grid[CASTLE_PLACEMENT_Y][CASTLE_PLACEMENT_X] = MapTile(TileType::Castle);
 }
 
 bool Map::placeTower(int row, int col, TileType t, int &oro) {
