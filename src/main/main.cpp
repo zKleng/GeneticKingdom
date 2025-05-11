@@ -5,6 +5,8 @@
 #include "../../include/game/Harpia.h"
 #include "../../include/game/Mercenario.h"
 #include "../../include/game/Arquero.h"
+#include "../../include/game/Mago.h"
+#include "../../include/game/Artillero.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -122,6 +124,14 @@ int main() {
                                     auto torre = std::make_unique<ArqueroTower>();
                                     torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
                                     torres.push_back(std::move(torre));
+                                } else if(selectedTower == TileType::Tower2){
+                                    auto torre = std::make_unique<MagoTower>();
+                                    torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
+                                    torres.push_back(std::move(torre));
+                                } else if(selectedTower == TileType::Tower3){
+                                    auto torre = std::make_unique<ArtilleroTower>();
+                                    torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
+                                    torres.push_back(std::move(torre));
                                 }
                             
                             } else {
@@ -155,28 +165,28 @@ int main() {
             // Creacion de enemigos
 
             // Creacion ogros
-            for (int i = 0; i < 1; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 auto enemigo = std::make_unique<Ogro>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion elfos
-            for (int i = 0; i < 1; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 auto enemigo = std::make_unique<ElfoOscuro>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion harpias
-            for (int i = 0; i < 1; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 auto enemigo = std::make_unique<Harpia>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion mercenarios
-            for (int i = 0; i < 1; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 auto enemigo = std::make_unique<Mercenario>();
                 enemigo->setPath(camino);
                 enemigos.push_back(std::move(enemigo));

@@ -1,12 +1,12 @@
-#include "../../include/game/Arquero.h"
+#include "../../include/game/Mago.h"
 #include "../../include/game/GameConstants.h"
 #include <cmath>
 #include <cstdlib> // rand
 
-ArqueroTower::ArqueroTower() {
-    towerType = "arquero";
-    damage = 100.f;
-    range = 150.f;
+MagoTower::MagoTower() {
+    towerType = "mago";
+    damage = 250.f;
+    range = 100.f;
     attackReloadTime = 1.f;
     specialAttackRechargeTime = 8.f;
     cooldown = 0.f;
@@ -20,14 +20,19 @@ ArqueroTower::ArqueroTower() {
     upgradeCosts[2] = 80.f;
 }
 
-void ArqueroTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float deltaTime, int& oro, int& enemigosMuertos) {
+void MagoTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, float deltaTime, int& oro, int& enemigosMuertos) {
+    // Actualizar cooldowns
     cooldown = std::max(0.f, cooldown - deltaTime);
     specialCooldown = std::max(0.f, specialCooldown - deltaTime);
 
     if (cooldown > 0.f)
         return;
 
-    for (auto it = enemigos.begin(); it != enemigos.end(); ++it) {
+    bool attacked = false;
+
+
+    auto it = enemigos.begin();
+    while (it != enemigos.end()) {
         Enemy* e = it->get();
         float dx = e->getPosition().x - position.x;
         float dy = e->getPosition().y - position.y;
@@ -36,34 +41,38 @@ void ArqueroTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, fl
         if (dist <= range) {
             float dañoFinal = damage;
 
-            if (specialCooldown <= 0.f && (rand() % 100) < static_cast<int>(probabilidadHabilidad * 100)) {
+            if (specialCooldown <= 0.f && (rand() % 100) < 20) {
                 dañoFinal *= 1.5f;
                 specialCooldown = specialAttackRechargeTime;
             }
 
-            std::cout << "[Torre Arquero] Daño aplicado: " << dañoFinal
+            std::cout << "[Torre Artillero] Daño aplicado: " << dañoFinal
                       << " al enemigo en posición: (" 
                       << static_cast<int>(e->getPosition().x) << ", "
                       << static_cast<int>(e->getPosition().y) << ")\n";
 
             e->receiveDamage(dañoFinal, "flecha");
+            attacked = true;
 
             if (e->getStats() <= 0.f) {
                 oro += static_cast<int>(goldPerKill);
                 enemigosMuertos++;
-                enemigos.erase(it);
+                it = enemigos.erase(it);// eliminar el enemigo
+                continue; 
             }
-
-            cooldown = attackReloadTime;  // reiniciar cooldown tras atacar
-            break; // salir del ciclo luego de atacar a un solo enemigo
         }
+
+        ++it;
+    }
+
+    if (attacked) {
+        cooldown = attackReloadTime; // resetear cooldown de ataque
     }
 }
 
-
-void ArqueroTower::draw(sf::RenderWindow& window) {
+void MagoTower::draw(sf::RenderWindow& window) {
     sf::RectangleShape dummy(sf::Vector2f(static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE)));
-    dummy.setFillColor(sf::Color::Red);
+    dummy.setFillColor(sf::Color::Magenta);
     dummy.setPosition(position);
     window.draw(dummy);
 }

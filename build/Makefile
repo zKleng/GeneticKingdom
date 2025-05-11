@@ -180,6 +180,30 @@ src/game/Arquero.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Arquero.cpp.s
 .PHONY : src/game/Arquero.cpp.s
 
+src/game/Artillero.o: src/game/Artillero.cpp.o
+.PHONY : src/game/Artillero.o
+
+# target to build an object file
+src/game/Artillero.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Artillero.cpp.o
+.PHONY : src/game/Artillero.cpp.o
+
+src/game/Artillero.i: src/game/Artillero.cpp.i
+.PHONY : src/game/Artillero.i
+
+# target to preprocess a source file
+src/game/Artillero.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Artillero.cpp.i
+.PHONY : src/game/Artillero.cpp.i
+
+src/game/Artillero.s: src/game/Artillero.cpp.s
+.PHONY : src/game/Artillero.s
+
+# target to generate assembly for a file
+src/game/Artillero.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Artillero.cpp.s
+.PHONY : src/game/Artillero.cpp.s
+
 src/game/ElfoOscuro.o: src/game/ElfoOscuro.cpp.o
 .PHONY : src/game/ElfoOscuro.o
 
@@ -251,6 +275,30 @@ src/game/Harpia.s: src/game/Harpia.cpp.s
 src/game/Harpia.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Harpia.cpp.s
 .PHONY : src/game/Harpia.cpp.s
+
+src/game/Mago.o: src/game/Mago.cpp.o
+.PHONY : src/game/Mago.o
+
+# target to build an object file
+src/game/Mago.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Mago.cpp.o
+.PHONY : src/game/Mago.cpp.o
+
+src/game/Mago.i: src/game/Mago.cpp.i
+.PHONY : src/game/Mago.i
+
+# target to preprocess a source file
+src/game/Mago.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Mago.cpp.i
+.PHONY : src/game/Mago.cpp.i
+
+src/game/Mago.s: src/game/Mago.cpp.s
+.PHONY : src/game/Mago.s
+
+# target to generate assembly for a file
+src/game/Mago.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GeneticKingdom.dir/build.make CMakeFiles/GeneticKingdom.dir/src/game/Mago.cpp.s
+.PHONY : src/game/Mago.cpp.s
 
 src/game/Mercenario.o: src/game/Mercenario.cpp.o
 .PHONY : src/game/Mercenario.o
@@ -386,6 +434,9 @@ help:
 	@echo "... src/game/Arquero.o"
 	@echo "... src/game/Arquero.i"
 	@echo "... src/game/Arquero.s"
+	@echo "... src/game/Artillero.o"
+	@echo "... src/game/Artillero.i"
+	@echo "... src/game/Artillero.s"
 	@echo "... src/game/ElfoOscuro.o"
 	@echo "... src/game/ElfoOscuro.i"
 	@echo "... src/game/ElfoOscuro.s"
@@ -395,6 +446,9 @@ help:
 	@echo "... src/game/Harpia.o"
 	@echo "... src/game/Harpia.i"
 	@echo "... src/game/Harpia.s"
+	@echo "... src/game/Mago.o"
+	@echo "... src/game/Mago.i"
+	@echo "... src/game/Mago.s"
 	@echo "... src/game/Mercenario.o"
 	@echo "... src/game/Mercenario.i"
 	@echo "... src/game/Mercenario.s"

@@ -6,9 +6,11 @@ cmake_policy(SET CMP0009 NEW)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/*.cpp")
 set(OLD_GLOB
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Arquero.cpp"
+  "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Artillero.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/ElfoOscuro.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Enemy.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Harpia.cpp"
+  "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Mago.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Mercenario.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Ogro.cpp"
   "/Users/sergiodanielalvarezchanto/desktop/GeneticKingdom/src/game/Tower.cpp"
