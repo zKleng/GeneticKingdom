@@ -3,7 +3,6 @@
 *.out
 *.obj
 *.o
-main
 # Archivos SFML runtime
 *.dll
 
