@@ -6,7 +6,7 @@
 
 Mercenario::Mercenario() {
     // Atributos base
-    health = 150.f;
+    health = 250.f;
     speed = 0.2f;  // intermedio
 
     resistanceArrow     = .75f;  // 100% resistencia

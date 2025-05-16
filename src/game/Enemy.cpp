@@ -33,32 +33,32 @@ static sf::Vector2f normalize(const sf::Vector2f& v) {
 
 // Desplazar enemigo a lo largo de la matriz/ventana
 void Enemy::moveEnemy() {
-    if (path.empty()) return;
-    if (pathIndex >= path.size()) return;
+    if (path.empty() || pathIndex >= path.size()) return;
 
-    // Asegurar que el pathIndex esté dentro del rango válido
-    sf::Vector2f target = cellToPixel(path[pathIndex]);
+    // Mover mientras siga alcanzando targets rápidamente (por velocidad alta)
+    while (true) {
+        if (pathIndex >= path.size()) return;
 
-    // Verificar que se llego al siguiente destino (siguiente casilla)
-    if (distance(position, target) < 1.f) {
-        ++pathIndex;
+        sf::Vector2f target = cellToPixel(path[pathIndex]);
+        sf::Vector2f toTarget = target - position;
+        float dist = std::sqrt(toTarget.x * toTarget.x + toTarget.y * toTarget.y);
 
-        // verificar si se llego hasta el final del camino
-        if (pathIndex >= path.size()) {
-            pathIndex = path.size();
-            return;
+        // Si estamos muy cerca del target, pasamos al siguiente nodo del camino
+        if (dist < speed) {
+            position = target;
+            ++pathIndex;
+        } else {
+            // Movimiento hacia el target actual
+            sf::Vector2f dir = normalize(toTarget);
+            position += dir * speed;
+            break;
         }
-
-        target = cellToPixel(path[pathIndex]);
     }
 
-    // Movimiento normal
-    sf::Vector2f dir = normalize(target - position);
-    position += dir * speed;
-
-    // Mantener el sprite alineado
+    // Actualizar sprite
     sprite.setPosition(position);
 }
+
 
 
 // Dibujar sprite enemigos

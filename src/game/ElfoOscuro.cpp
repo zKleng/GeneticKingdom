@@ -6,7 +6,7 @@
 
 ElfoOscuro::ElfoOscuro() {
     // Atributos base
-    health = 150.f;
+    health = 180.f;
     speed = 0.3f;  // Lento
 
     resistanceArrow     = 0.0f;  // sin resistencia

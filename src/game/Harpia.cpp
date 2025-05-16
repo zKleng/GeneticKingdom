@@ -6,7 +6,7 @@
 
 Harpia::Harpia() {
     // Atributos base
-    health = 150.f;
+    health = 200.f;
     speed = 0.25f;  // intermedio
 
     resistanceArrow     = 0.0f;  // sin resistencia

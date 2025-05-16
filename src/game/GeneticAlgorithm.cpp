@@ -27,9 +27,9 @@ void GeneticAlgorithm::select_and_reproduce(std::vector<std::unique_ptr<Enemy>>&
 
         // Mutación
         if (rand() % 100 < mutation_rate * 100) {
-            new_health += (rand() % 40 - 20);  // [-5, 5]
-            new_speed  += (rand() % 5 - 2);   // [-2, 2]
-        }
+            new_health += (rand() % 16 + 5);   // +5 a +20
+            new_speed  += ((rand() % 6) / 10.f); // +0.0 a +0.5
+        }        
 
         // Crear hijo1
         auto child1 = parent1->clone();

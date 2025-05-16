@@ -103,14 +103,14 @@ int main() {
             }
 
             // Creacion elfos
-            for (int i = 0; i < 3 + generaciones-3; ++i) {
+            for (int i = 0; i < 3 + generaciones; ++i) {
                 auto enemigo = std::make_unique<ElfoOscuro>();
                 enemigo->setPath(gameMap.findPathAStar(entrada, castillo));
                 enemigos.push_back(std::move(enemigo));
             }
 
             // Creacion harpias
-            for (int i = 0; i  < 0 + generaciones-1; ++i) {
+            for (int i = 0; i  < 0 + generaciones; ++i) {
                 auto enemigo = std::make_unique<Harpia>();
                 enemigo->setPath(gameMap.findPathAStar(entrada, castillo));
                 enemigos.push_back(std::move(enemigo));
