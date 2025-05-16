@@ -5,53 +5,8 @@
 #include <cmath>
 #include <iostream>
 
-// Constructor con valores iniciales
-Enemy(float v, float spd, float rArrow, float rMagic, float rArt)
-    : health(v), speed(spd), resistanceArrow(rArrow), resistanceMagic(rMagic), resistanceArtillery(rArt) {}
-
-// Desplazar enemigo a lo largo de la matriz/ventana
-void Enemy::moveEnemy() {
-    if (path.empty()) return;
-    if (pathIndex >= path.size()) return;
-
-    sf::Vector2f target = cellToPixel(path[pathIndex]);
-
-    if (distance(position, target) < 1.f) {
-        ++pathIndex;
-    } else {
-        sf::Vector2f dir = normalize(target - position);
-        position += dir * speed;
-        sprite.setPosition(position);
-    }
-}
-
-// Dibujar sprite enemigos
-void Enemy::draw(sf::RenderWindow& window) {
-    sprite.setPosition(position);
-    window.draw(sprite);
-}
-
-// recuperar datos de los enemigos
-float Enemy::getStats() const {
-    return (health, speed);
-}
-
-// Metodo para gestionar dano segun tipo de ataque
-void Enemy::receiveDamage(float amount, std::string tipo) {
-    float effectiveDamage = amount;
-
-    if (tipo == "flecha")         effectiveDamage *= (1.f - resistanceArrow);
-    else if (tipo == "magia")     effectiveDamage *= (1.f - resistanceMagic);
-    else if (tipo == "artilleria")effectiveDamage *= (1.f - resistanceArtillery);
-
-    health -= effectiveDamage;
-}
-
+// ---Metodos auxiliares---
 //Metodos encargados del dibujado y colocacion del enemigo
-
-Enemy::Enemy() : sprite(texture) {
-    pathIndex = 0;
-}
 
 
 // Convierte una celda del mapa (fila, columna) a posición en píxeles
@@ -74,6 +29,64 @@ static sf::Vector2f normalize(const sf::Vector2f& v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y);
     return (len != 0.f) ? sf::Vector2f(v.x / len, v.y / len) : sf::Vector2f(0.f, 0.f);
 }
+
+
+// Desplazar enemigo a lo largo de la matriz/ventana
+void Enemy::moveEnemy() {
+    if (path.empty()) return;
+    if (pathIndex >= path.size()) return;
+
+    // Asegurar que el pathIndex esté dentro del rango válido
+    sf::Vector2f target = cellToPixel(path[pathIndex]);
+
+    // Verificar que se llego al siguiente destino (siguiente casilla)
+    if (distance(position, target) < 1.f) {
+        ++pathIndex;
+
+        // verificar si se llego hasta el final del camino
+        if (pathIndex >= path.size()) {
+            pathIndex = path.size();
+            return;
+        }
+
+        target = cellToPixel(path[pathIndex]);
+    }
+
+    // Movimiento normal
+    sf::Vector2f dir = normalize(target - position);
+    position += dir * speed;
+
+    // Mantener el sprite alineado
+    sprite.setPosition(position);
+}
+
+
+// Dibujar sprite enemigos
+void Enemy::draw(sf::RenderWindow& window) {
+    sprite.setPosition(position);
+    window.draw(sprite);
+}
+
+Enemy::Enemy() : sprite(texture) {
+    pathIndex = 0;
+}
+
+// recuperar datos de los enemigos
+float Enemy::getStats() const {
+    return health;
+}
+
+// Metodo para gestionar dano segun tipo de ataque
+void Enemy::receiveDamage(float amount, std::string tipo) {
+    float effectiveDamage = amount;
+
+    if (tipo == "flecha")         effectiveDamage *= (1.f - resistanceArrow);
+    else if (tipo == "magia")     effectiveDamage *= (1.f - resistanceMagic);
+    else if (tipo == "artilleria")effectiveDamage *= (1.f - resistanceArtillery);
+
+    health -= effectiveDamage;
+}
+
 
 // Metodo para pasarle el path a los enemigos
 void Enemy::setPath(const std::vector<sf::Vector2i>& camino) {

@@ -29,3 +29,11 @@ void ElfoOscuro::draw(sf::RenderWindow& window) {
     dummy.setPosition(position);
     window.draw(dummy);
 }
+
+void ElfoOscuro::setGenes(float h, float s, float ra, float rm, float rt) {
+    health = h;
+    speed = s;
+    resistanceArrow = ra;
+    resistanceMagic = rm;
+    resistanceArtillery = rt;
+}

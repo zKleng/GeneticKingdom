@@ -29,3 +29,11 @@ void Harpia::draw(sf::RenderWindow& window) {
     dummy.setPosition(position);
     window.draw(dummy);
 }
+
+void Harpia::setGenes(float h, float s, float ra, float rm, float rt) {
+    health = h;
+    speed = s;
+    resistanceArrow = ra;
+    resistanceMagic = rm;
+    resistanceArtillery = rt;
+}
