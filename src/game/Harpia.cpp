@@ -14,10 +14,10 @@ Harpia::Harpia() {
     resistanceArtillery = 1.0f;  // 100% resistencia
 
     // Cargar textura (opcional)
-    if (!texture.loadFromFile("resources/EnemySprites/HarpiaSprite.png")) {
+    /*if (!texture.loadFromFile("resources/EnemySprites/HarpiaSprite.png")) {
         std::cerr << "[ERROR] No se pudo cargar la textura del Ogro.\n";
         // alternativa: usar color sólido en draw()
-    }
+    }*/
 
     sprite.setTexture(texture);
     sprite.setPosition(position);

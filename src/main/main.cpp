@@ -102,25 +102,27 @@ int main() {
 
         // aumento gradual de la cantidad de enemigos
         int ogros = 3 + generaciones * 2;      
-        int elfos = 2 + generaciones * 2;      
-        int harpias = 0 + generaciones * 2;  
-        int mercenarios = 10 + generaciones * 2;
+        int elfos = 2 + generaciones * 1.5;      
+        int harpias = 1 + generaciones * 1.25;  
+        int mercenarios = 1 + generaciones * 1.125;
 
         //crear de enemigos
         // OGROS
-        if (poblacionOgros.empty()) {
-            for (int i = 0; i < ogros; ++i) {
+        if ((int)poblacionOgros.size() < ogros) {
+            int faltan = ogros - poblacionOgros.size();
+            for (int i = 0; i < faltan; ++i) {
                 auto e = std::make_unique<Ogro>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionOgros.push_back(std::move(e));
             }
         } else {
             GeneticAlgorithm::select_and_reproduce(poblacionOgros, 0.1);
-        }
+        }        
 
         // ELFOS
-        if (poblacionElfos.empty()) {
-            for (int i = 0; i < elfos; ++i) {
+        if ((int)poblacionElfos.size() < elfos) {
+            int faltan = elfos - poblacionElfos.size();
+            for (int i = 0; i < faltan; ++i) {
                 auto e = std::make_unique<ElfoOscuro>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionElfos.push_back(std::move(e));
@@ -130,8 +132,9 @@ int main() {
         }
 
         // HARPIAS
-        if (poblacionHarpias.empty()) {
-            for (int i = 0; i < harpias; ++i) {
+        if ((int)poblacionHarpias.size() < harpias) {
+            int faltan = harpias - poblacionHarpias.size();
+            for (int i = 0; i < faltan; ++i) {
                 auto e = std::make_unique<Harpia>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionHarpias.push_back(std::move(e));
@@ -141,15 +144,16 @@ int main() {
         }
         
         // MERCENARIOS
-        if (poblacionMercenarios.empty()) {
-            for (int i = 0; i < mercenarios; ++i) {
+        if ((int)poblacionMercenarios.size() < mercenarios) {
+            int faltan = mercenarios - poblacionMercenarios.size();
+            for (int i = 0; i < faltan; ++i) {
                 auto e = std::make_unique<Mercenario>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionMercenarios.push_back(std::move(e));
             }
         } else {
             GeneticAlgorithm::select_and_reproduce(poblacionMercenarios, 0.1);
-        }
+        }        
     };
 
     auto regenerarEnemigos = [&]() {

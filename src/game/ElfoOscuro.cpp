@@ -14,10 +14,10 @@ ElfoOscuro::ElfoOscuro() {
     resistanceArtillery = 0.0f;  // sin resistencia
 
     // Cargar textura (opcional)
-    if (!texture.loadFromFile("resources/EnemySprites/ElfoOscuroSprite.png")) {
+    /*if (!texture.loadFromFile("resources/EnemySprites/ElfoOscuroSprite.png")) {
         std::cerr << "[ERROR] No se pudo cargar la textura del Ogro.\n";
         // alternativa: usar color sólido en draw()
-    }
+    }*/
 
     sprite.setTexture(texture);
     sprite.setPosition(position);
