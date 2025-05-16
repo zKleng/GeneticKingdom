@@ -7,6 +7,7 @@
 #include "../../include/game/Arquero.h"
 #include "../../include/game/Mago.h"
 #include "../../include/game/Artillero.h"
+#include "../../include/game/GeneticAlgorithm.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -34,6 +35,9 @@ static sf::Color getColorForTile(TileType type) {
     switch (type) {
         case TileType::Entry:   return sf::Color::Green;
         case TileType::Castle:  return sf::Color::Blue;
+        /*case TileType::Tower1:  return sf::Color::Red;
+        case TileType::Tower2:  return sf::Color::Blue;
+        case TileType::Tower3:  return sf::Color::Green;*/
         case TileType::Path:    return sf::Color(139, 69, 19);
         default:                return sf::Color::White;
     }
@@ -51,7 +55,7 @@ int main() {
 
     // Enemigos y torres activas
     std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
-    std::vector<std::unique_ptr<Tower>> torres;
+    std::vector<std::unique_ptr<Tower>> torres; //vector (lista ordenada) que guarda los punteros dinamicamente de cada torre
 
 
     // Ventana
@@ -211,6 +215,32 @@ int main() {
         if (phase == Phase::Wave) {
             for (auto& e : enemigos) {
                 e->moveEnemy();
+            }
+            for (auto& torre : torres) {
+                torre->attackEnemy(enemigos, deltaTime, oro, enemigosMuertos);
+            }
+        
+            if (enemigos.empty()) {
+                // Calcular fitness de la generación actual
+                for (auto& enemy : enemigos) {
+                    enemy->fitness();
+                }
+        
+                // Aplicar algoritmo genético
+                GeneticAlgorithm::select_and_reproduce(enemigos, probMutacion);
+        
+                // Mostrar resultados
+                std::cout << "=== Generación " << generaciones << " finalizada ===\n";
+                for (const auto& enemy : enemigos) {
+                    std::cout << "Enemy: salud=" << enemy->getHealth()
+                              << ", velocidad=" << enemy->getSpeed()
+                              << ", fitness=" << enemy->fitness() << "\n";
+                }
+        
+                // Preparar próxima oleada
+                phase = Phase::Construction;
+                phaseClock.restart();
+                ++generaciones;
             }
         }
 

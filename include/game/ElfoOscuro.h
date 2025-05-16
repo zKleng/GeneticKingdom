@@ -6,4 +6,8 @@ public:
     ElfoOscuro(); // Constructor
 
     void draw(sf::RenderWindow& window) override;
+    std::unique_ptr<Enemy> clone() const override {
+        return std::make_unique<ElfoOscuro>(*this);
+    }
+    
 };
