@@ -37,21 +37,7 @@ public:
 
     int getLevel() const { return towerLevel; }
 
-    //carga sprites
-    void loadTexture() {
-        std::string path = getTexture(towerLevel);
-        if (texture.loadFromFile(path)) {
-            sprite.setTexture(texture, true);  
-            sprite.setScale(sf::Vector2f(
-                float(TILE_SIZE) / texture.getSize().x * 2.5,
-                float(TILE_SIZE) / texture.getSize().y * 2.5
-            ));
-            hasSprite = true;
-        } else {
-            hasSprite = false;
-            std::cerr << "[ERROR] No se pudo cargar la textura: " << path << '\n';
-        }
-    }
+    void loadTexture();//cargar las texturas y sprites de las torres
 
 protected:
     // Atributos que tendran las subclases de enemigos

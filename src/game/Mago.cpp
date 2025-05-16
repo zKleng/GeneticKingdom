@@ -107,6 +107,6 @@ std::string MagoTower::getTexture(int level) {
         case 2: return "resources/TowerSprites/MagoTowerSprite2.png";
         case 3: return "resources/TowerSprites/MagoTowerSprite3.png";
         case 4: return "resources/TowerSprites/MagoTowerSprite4.png";
-        default: return "resources/TowerSprites/MagoTowerSprite1.png"; // fallback
+        default: return "resources/TowerSprites/MagoTowerSprite4.png"; // fallback
     }
 }

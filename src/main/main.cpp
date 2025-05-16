@@ -101,10 +101,10 @@ int main() {
     auto generarPoblaciones = [&](int ronda) {
 
         // aumento gradual de la cantidad de enemigos
-        int ogros = 3 + generaciones * 2;      
-        int elfos = 2 + generaciones * 1.5;      
-        int harpias = 1 + generaciones * 1.25;  
-        int mercenarios = 1 + generaciones * 1.125;
+        int ogros = 3 + generaciones ;      
+        int elfos = 2 + generaciones ;      
+        int harpias = 1 + generaciones;  
+        int mercenarios = 1 + generaciones;
 
         //crear de enemigos
         // OGROS

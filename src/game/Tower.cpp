@@ -26,7 +26,7 @@ Tower::Tower()
 
 void Tower::draw(sf::RenderWindow& window) {
     if (hasSprite) {
-        sprite.setPosition(position);
+        sprite.setPosition(sf::Vector2f(position.x , position.y));
         window.draw(sprite);
     } else {
         sf::RectangleShape dummy{ sf::Vector2f(float(TILE_SIZE), float(TILE_SIZE)) };
@@ -80,6 +80,33 @@ void Tower::setPosition(const sf::Vector2f& pos) {
 
 sf::Vector2f Tower::getPosition() const {
     return position;
+}
+
+void Tower::loadTexture() {
+    std::string path = getTexture(towerLevel);
+    if (texture.loadFromFile(path)) {
+        sprite.setTexture(texture, true);
+
+        // Escalar sprite
+        sprite.setScale(sf::Vector2f(
+            float(TILE_SIZE) / texture.getSize().x * 1.5f,
+            float(TILE_SIZE) / texture.getSize().y * 1.5f
+        ));
+
+        // Calcular tamaño escalado
+        sf::Vector2f scaledSize(
+            texture.getSize().x * sprite.getScale().x,
+            texture.getSize().y * sprite.getScale().y
+        );
+
+        // Centrar el sprite
+        sprite.setOrigin(sf::Vector2f(scaledSize.x / 2.f, scaledSize.y / 2.f));
+
+        hasSprite = true;
+    } else {
+        hasSprite = false;
+        std::cerr << "[ERROR] No se pudo cargar la textura: " << path << '\n';
+    }
 }
 
 
