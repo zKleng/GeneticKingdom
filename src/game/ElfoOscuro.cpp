@@ -6,7 +6,7 @@
 
 ElfoOscuro::ElfoOscuro() {
     // Atributos base
-    health = 150.f;
+    health = 180.f;
     speed = 0.3f;  // Lento
 
     resistanceArrow     = 0.0f;  // sin resistencia
@@ -14,10 +14,10 @@ ElfoOscuro::ElfoOscuro() {
     resistanceArtillery = 0.0f;  // sin resistencia
 
     // Cargar textura (opcional)
-    if (!texture.loadFromFile("resources/EnemySprites/ElfoOscuroSprite.png")) {
+    /*if (!texture.loadFromFile("resources/EnemySprites/ElfoOscuroSprite.png")) {
         std::cerr << "[ERROR] No se pudo cargar la textura del Ogro.\n";
         // alternativa: usar color sólido en draw()
-    }
+    }*/
 
     sprite.setTexture(texture);
     sprite.setPosition(position);
@@ -28,4 +28,12 @@ void ElfoOscuro::draw(sf::RenderWindow& window) {
     dummy.setFillColor(sf::Color(20, 20, 30)); // Verde oscuro
     dummy.setPosition(position);
     window.draw(dummy);
+}
+
+void ElfoOscuro::setGenes(float h, float s, float ra, float rm, float rt) {
+    health = h;
+    speed = s;
+    resistanceArrow = ra;
+    resistanceMagic = rm;
+    resistanceArtillery = rt;
 }

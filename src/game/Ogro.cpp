@@ -14,10 +14,10 @@ Ogro::Ogro() {
     resistanceArtillery = 0.0f;  // sin resistencia
 
     // Cargar textura (opcional)
-    if (!texture.loadFromFile("resources/EnemySprites/OgroSprite.png")) {
+    /*if (!texture.loadFromFile("resources/EnemySprites/OgroSprite.png")) {
         std::cerr << "[ERROR] No se pudo cargar la textura del Ogro.\n";
         // alternativa: usar color sólido en draw()
-    }
+    }*/
 
     sprite.setTexture(texture);
     sprite.setPosition(position);
@@ -28,4 +28,12 @@ void Ogro::draw(sf::RenderWindow& window) {
     dummy.setFillColor(sf::Color(80, 180, 80)); // Verde oscuro
     dummy.setPosition(position);
     window.draw(dummy);
+}
+
+void Ogro::setGenes(float h, float s, float ra, float rm, float rt) {
+    health = h;
+    speed = s;
+    resistanceArrow = ra;
+    resistanceMagic = rm;
+    resistanceArtillery = rt;
 }

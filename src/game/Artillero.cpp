@@ -48,9 +48,9 @@ void ArtilleroTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, 
                 }
     
                 // Aplicar daño
-                std::cout << "[Torre artillera] Ataco con artilleria al enemigo en posición: (" 
+                /*std::cout << "[Torre artillera] Ataco con artilleria al enemigo en posición: (" 
                           << static_cast<int>(e->getPosition().x) << ", "
-                          << static_cast<int>(e->getPosition().y) << ")\n";
+                          << static_cast<int>(e->getPosition().y) << ")\n";*/
     
                 e->receiveDamage(dañoFinal, "artilleria");
     

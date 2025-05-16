@@ -7,6 +7,7 @@
 #include "../../include/game/Arquero.h"
 #include "../../include/game/Mago.h"
 #include "../../include/game/Artillero.h"
+#include "../../include/game/GeneticAlgorithm.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -34,6 +35,9 @@ static sf::Color getColorForTile(TileType type) {
     switch (type) {
         case TileType::Entry:   return sf::Color::Green;
         case TileType::Castle:  return sf::Color::Blue;
+        /*case TileType::Tower1:  return sf::Color::Red;
+        case TileType::Tower2:  return sf::Color::Blue;
+        case TileType::Tower3:  return sf::Color::Green;*/
         case TileType::Path:    return sf::Color(139, 69, 19);
         default:                return sf::Color::White;
     }
@@ -48,11 +52,6 @@ static constexpr std::array<TileType,3> towerButtons = {
 
 int main() {
     Map gameMap;
-
-    // Enemigos y torres activas
-    std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
-    std::vector<std::unique_ptr<Tower>> torres;
-
 
     // Ventana
     std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH  * TILE_SIZE + PANEL_WIDTH);
@@ -79,6 +78,102 @@ int main() {
     int        mutacionesAcumuladas = 0;
     
     sf::Clock deltaClock;
+
+    // Enemigos y torres activas
+    std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
+    std::vector<std::unique_ptr<Enemy>> poblacionOgros;
+    std::vector<std::unique_ptr<Enemy>> poblacionElfos;
+    std::vector<std::unique_ptr<Enemy>> poblacionHarpias;
+    std::vector<std::unique_ptr<Enemy>> poblacionMercenarios;
+
+    std::vector<std::unique_ptr<Enemy>> poblacionAnterior; //vector para las poblaciones que mutan
+    std::vector<std::unique_ptr<Tower>> torres; //vector (lista ordenada) que guarda los punteros dinamicamente de cada torre
+
+    //Pathfinding vectores
+    // Posición inicial y destino
+    sf::Vector2i entrada(ENEMY_ENTRY_Y, ENEMY_ENTRY_X); // en términos (col, fila) punto de salida de los enemigos
+    sf::Vector2i castillo(CASTLE_PLACEMENT_X, CASTLE_PLACEMENT_Y); // posicion castillo
+
+    // Calcular camino con A*
+    std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
+
+    // Generador de enemigos desde población
+    auto generarPoblaciones = [&](int ronda) {
+
+        // aumento gradual de la cantidad de enemigos
+        int ogros = 3 + generaciones * 2;      
+        int elfos = 2 + generaciones * 1.5;      
+        int harpias = 1 + generaciones * 1.25;  
+        int mercenarios = 1 + generaciones * 1.125;
+
+        //crear de enemigos
+        // OGROS
+        if ((int)poblacionOgros.size() < ogros) {
+            int faltan = ogros - poblacionOgros.size();
+            for (int i = 0; i < faltan; ++i) {
+                auto e = std::make_unique<Ogro>();
+                e->setPath(gameMap.findPathAStar(entrada, castillo));
+                poblacionOgros.push_back(std::move(e));
+            }
+        } else {
+            GeneticAlgorithm::select_and_reproduce(poblacionOgros, 0.1);
+        }        
+
+        // ELFOS
+        if ((int)poblacionElfos.size() < elfos) {
+            int faltan = elfos - poblacionElfos.size();
+            for (int i = 0; i < faltan; ++i) {
+                auto e = std::make_unique<ElfoOscuro>();
+                e->setPath(gameMap.findPathAStar(entrada, castillo));
+                poblacionElfos.push_back(std::move(e));
+            }
+        } else {
+            GeneticAlgorithm::select_and_reproduce(poblacionElfos, 0.1);
+        }
+
+        // HARPIAS
+        if ((int)poblacionHarpias.size() < harpias) {
+            int faltan = harpias - poblacionHarpias.size();
+            for (int i = 0; i < faltan; ++i) {
+                auto e = std::make_unique<Harpia>();
+                e->setPath(gameMap.findPathAStar(entrada, castillo));
+                poblacionHarpias.push_back(std::move(e));
+            }
+        } else {
+            GeneticAlgorithm::select_and_reproduce(poblacionHarpias, 0.1);
+        }
+        
+        // MERCENARIOS
+        if ((int)poblacionMercenarios.size() < mercenarios) {
+            int faltan = mercenarios - poblacionMercenarios.size();
+            for (int i = 0; i < faltan; ++i) {
+                auto e = std::make_unique<Mercenario>();
+                e->setPath(gameMap.findPathAStar(entrada, castillo));
+                poblacionMercenarios.push_back(std::move(e));
+            }
+        } else {
+            GeneticAlgorithm::select_and_reproduce(poblacionMercenarios, 0.1);
+        }        
+    };
+
+    auto regenerarEnemigos = [&]() {
+        enemigos.clear();
+    
+        auto clonarGrupo = [&](std::vector<std::unique_ptr<Enemy>>& poblacion) {
+            for (const auto& enemigo : poblacion) {
+                auto copia = enemigo->clone();
+                copia->setPath(gameMap.findPathAStar(entrada, castillo));
+                enemigos.push_back(std::move(copia));
+            }
+        };
+    
+        clonarGrupo(poblacionOgros);
+        clonarGrupo(poblacionElfos);
+        clonarGrupo(poblacionHarpias);
+        clonarGrupo(poblacionMercenarios);
+        
+    };
+
 
     while (window.isOpen()) {
 
@@ -166,44 +261,16 @@ int main() {
         float elapsed = phaseClock.getElapsedTime().asSeconds();
         if (phase == Phase::Construction && elapsed >= BUILD_SECONDS) {
             phase = Phase::Wave;
-            ++generaciones;
-
-            // Posición inicial y destino
-            sf::Vector2i entrada(ENEMY_ENTRY_Y, ENEMY_ENTRY_X); // en términos (col, fila) punto de salida de los enemigos
-            sf::Vector2i castillo(CASTLE_PLACEMENT_X, CASTLE_PLACEMENT_Y); // posicion castillo
+            phaseClock.restart();
 
             // Calcular camino con A*
             std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
 
-            // Creacion de enemigos
+            //creacion de los enemigos
+            generarPoblaciones(generaciones);
+            regenerarEnemigos();
+            ++generaciones;
 
-            // Creacion ogros
-            for (int i = 0; i < 1; ++i) {
-                auto enemigo = std::make_unique<Ogro>();
-                enemigo->setPath(camino);
-                enemigos.push_back(std::move(enemigo));
-            }
-
-            // Creacion elfos
-            for (int i = 0; i < 0; ++i) {
-                auto enemigo = std::make_unique<ElfoOscuro>();
-                enemigo->setPath(camino);
-                enemigos.push_back(std::move(enemigo));
-            }
-
-            // Creacion harpias
-            for (int i = 0; i < 0; ++i) {
-                auto enemigo = std::make_unique<Harpia>();
-                enemigo->setPath(camino);
-                enemigos.push_back(std::move(enemigo));
-            }
-
-            // Creacion mercenarios
-            for (int i = 0; i < 0; ++i) {
-                auto enemigo = std::make_unique<Mercenario>();
-                enemigo->setPath(camino);
-                enemigos.push_back(std::move(enemigo));
-            }
 
         }
 
@@ -212,6 +279,36 @@ int main() {
             for (auto& e : enemigos) {
                 e->moveEnemy();
             }
+            for (auto& torre : torres) {
+                torre->attackEnemy(enemigos, deltaTime, oro, enemigosMuertos);
+            }
+        
+            if (enemigos.empty()) {
+                std::cout << "=== Generación " << generaciones << " finalizada ===\n";
+
+                auto Mutar = [&](std::vector<std::unique_ptr<Enemy>>& poblacion, const std::string& tipo) {
+                    for (auto& e : poblacion) e->fitness();
+                    GeneticAlgorithm::select_and_reproduce(poblacion, probMutacion);
+
+                    std::cout << "Tipo: " << tipo << "\n";
+                    for (const auto& enemy : poblacion) {
+                        std::cout << "Enemy: salud=" << enemy->getHealth()
+                                << ", velocidad=" << enemy->getSpeed()
+                                << ", fitness=" << enemy->fitness() << "\n";
+                    }
+                };
+
+                Mutar(poblacionOgros, "Ogro");
+                Mutar(poblacionElfos, "Elfo Oscuro");
+                Mutar(poblacionHarpias, "Harpia");
+                Mutar(poblacionMercenarios, "Mercenario");
+
+                regenerarEnemigos();
+                ++generaciones;
+                phase = Phase::Construction;
+                phaseClock.restart();
+            }
+
         }
 
         // Dibujado

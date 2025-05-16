@@ -49,9 +49,9 @@ void ArqueroTower::attackEnemy(std::vector<std::unique_ptr<Enemy>>& enemigos, fl
             }
 
             // Aplicar daño
-            std::cout << "[Torre Arquero] Ataco con flecha al enemigo en posición: (" 
+            /*std::cout << "[Torre Arquero] Ataco con flecha al enemigo en posición: (" 
                       << static_cast<int>(e->getPosition().x) << ", "
-                      << static_cast<int>(e->getPosition().y) << ")\n";
+                      << static_cast<int>(e->getPosition().y) << ")\n";*/
 
             e->receiveDamage(dañoFinal, "flecha");
 
