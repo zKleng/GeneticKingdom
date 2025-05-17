@@ -19,15 +19,22 @@ Ogro::Ogro() {
         // alternativa: usar color sólido en draw()
     }*/
 
-    sprite.setTexture(texture);
+    loadTexture("resources/EnemySprites/OgroSprite.png");
     sprite.setPosition(position);
 }
 
 void Ogro::draw(sf::RenderWindow& window) {
-    sf::RectangleShape dummy{ sf::Vector2f(TILE_SIZE, TILE_SIZE) };
-    dummy.setFillColor(sf::Color(80, 180, 80)); // Verde oscuro
-    dummy.setPosition(position);
-    window.draw(dummy);
+    if (hasSprite) {
+        // dibuja tu textura real
+        sprite.setPosition(position);
+        window.draw(sprite);
+    } else {
+        // fallback: un cuadrado verde oscuro para probar
+        sf::RectangleShape dummy{ sf::Vector2f(TILE_SIZE, TILE_SIZE) };
+        dummy.setFillColor(sf::Color(80, 180, 80));
+        dummy.setPosition(position);
+        window.draw(dummy);
+    }
 }
 
 void Ogro::setGenes(float h, float s, float ra, float rm, float rt) {

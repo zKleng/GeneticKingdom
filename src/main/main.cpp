@@ -16,187 +16,292 @@
 #include <sstream>
 #include <array>
 #include <algorithm>
-#include <iostream>   // para mensajes de fallo
+#include <iostream> // para mensajes de fallo
 
+enum class Phase
+{
+    Construction,
+    Wave
+};
+enum class Action
+{
+    Place,
+    Upgrade
+};
 
-enum class Phase  { Construction, Wave };
-enum class Action { Place, Upgrade };
-
-static std::string formatTime(float seconds) {
+static std::string formatTime(float seconds)
+{
     int s = std::max(int(seconds), 0);
-    int m = s / 60;  s %= 60;
+    int m = s / 60;
+    s %= 60;
     std::ostringstream oss;
     oss << std::setw(2) << std::setfill('0') << m
         << ":" << std::setw(1) << std::setfill('0') << s;
     return oss.str();
 }
 
-static sf::Color getColorForTile(TileType type) {
-    switch (type) {
-        case TileType::Entry:   return sf::Color::Green;
-        case TileType::Castle:  return sf::Color::Blue;
-        /*case TileType::Tower1:  return sf::Color::Red;
-        case TileType::Tower2:  return sf::Color::Blue;
-        case TileType::Tower3:  return sf::Color::Green;*/
-        case TileType::Path:    return sf::Color(139, 69, 19);
-        default:                return sf::Color::White;
+static sf::Color getColorForTile(TileType type)
+{
+    switch (type)
+    {
+    case TileType::Entry:
+        return sf::Color::Green;
+    case TileType::Castle:
+        return sf::Color::Blue;
+    /*case TileType::Tower1:  return sf::Color::Red;
+    case TileType::Tower2:  return sf::Color::Blue;
+    case TileType::Tower3:  return sf::Color::Green;*/
+    case TileType::Path:
+        return sf::Color(139, 69, 19);
+    default:
+        return sf::Color::White;
     }
 }
 
 // Array de los tipos de torre para los botones 0,1,2
-static constexpr std::array<TileType,3> towerButtons = {
+static constexpr std::array<TileType, 3> towerButtons = {
     TileType::Tower1,
     TileType::Tower2,
-    TileType::Tower3
-};
+    TileType::Tower3};
 
-int main() {
+int main()
+{
     Map gameMap;
 
     // Ventana
-    std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH  * TILE_SIZE + PANEL_WIDTH);
+    std::uint32_t winW = static_cast<std::uint32_t>(MAP_WIDTH * TILE_SIZE + PANEL_WIDTH);
     std::uint32_t winH = static_cast<std::uint32_t>(MAP_HEIGHT * TILE_SIZE + TOOLBAR_HEIGHT);
-    sf::RenderWindow window(sf::VideoMode({ winW, winH }), "Genetic Kingdom");
+    sf::RenderWindow window(sf::VideoMode({winW, winH}), "Genetic Kingdom");
 
     // Fuente
-    sf::Font font;
-    if (!font.openFromFile("resources/Fonts/arial.ttf"))
+// Fuente principal
+
+sf::Font font;
+if (!font.openFromFile("resources/Fonts/arial.ttf"))
+    return -1;
+
+// <<< Aquí insertas el código de Game Over hasta centrar el texto >>>
+// 1) Después de cargar tu fuente principal y calcular winW, winH:
+
+    // Flag de Game Over
+    bool gameOver = false;
+
+    // Fuente específica para la pantalla de Game Over
+    sf::Font fontGO;
+    if (!fontGO.openFromFile("resources/Fonts/arial.ttf")) {
+        std::cerr << "[ERROR] No se pudo cargar resources/Fonts/arial.ttf para Game Over\n";
         return -1;
+    }
+
+    // Texto de Game Over (SFML 3): primero la fuente, luego el string, luego el tamaño
+    sf::Text gameOverText(
+        fontGO,
+        sf::String("GAME OVER\nPress R to Restart"),
+        48u
+    );
+    gameOverText.setFillColor(sf::Color::White);
+
+    // Centrar el texto en la ventana
+    {
+        auto bb = gameOverText.getLocalBounds();     // bb.position + bb.size
+        gameOverText.setOrigin({ bb.size.x/2.f, bb.size.y/2.f });
+        gameOverText.setPosition({ winW/2.f, winH/2.f });
+    }
 
     // Estado
-    Phase      phase         = Phase::Construction;
-    Action     action        = Action::Place;
-    TileType   selectedTower = TileType::Tower1;
-    sf::Clock  phaseClock;
-    int        oro           = 1000;
-    int        placedCount   = 0;
-    int        upgradeCount  = 0;
-    int        generaciones  = 0;
-    int        enemigosMuertos = 0;
-    float      fitnessActual   = 0.f;
-    float      probMutacion    = 0.05f;
-    int        mutacionesAcumuladas = 0;
-    
+
+    Phase phase = Phase::Construction;
+    Action action = Action::Place;
+    TileType selectedTower = TileType::Tower1;
+    sf::Clock phaseClock;
+    int oro = 1000;
+    int placedCount = 0;
+    int upgradeCount = 0;
+    int generaciones = 0;
+    int enemigosMuertos = 0;
+    float fitnessActual = 0.f;
+    float probMutacion = 0.05f;
+    int mutacionesAcumuladas = 0;
+
     sf::Clock deltaClock;
 
     // Enemigos y torres activas
-    std::vector<std::unique_ptr<Enemy>> enemigos; //vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
+    std::vector<std::unique_ptr<Enemy>> enemigos; // vector (lista ordenada) que guarda los punteros dinamicamente de cada enemigo
     std::vector<std::unique_ptr<Enemy>> poblacionOgros;
     std::vector<std::unique_ptr<Enemy>> poblacionElfos;
     std::vector<std::unique_ptr<Enemy>> poblacionHarpias;
     std::vector<std::unique_ptr<Enemy>> poblacionMercenarios;
 
-    std::vector<std::unique_ptr<Enemy>> poblacionAnterior; //vector para las poblaciones que mutan
-    std::vector<std::unique_ptr<Tower>> torres; //vector (lista ordenada) que guarda los punteros dinamicamente de cada torre
+    std::vector<std::unique_ptr<Enemy>> poblacionAnterior; // vector para las poblaciones que mutan
+    std::vector<std::unique_ptr<Tower>> torres;            // vector (lista ordenada) que guarda los punteros dinamicamente de cada torre
 
-    //Pathfinding vectores
-    // Posición inicial y destino
-    sf::Vector2i entrada(ENEMY_ENTRY_Y, ENEMY_ENTRY_X); // en términos (col, fila) punto de salida de los enemigos
+    // Pathfinding vectores
+    //  Posición inicial y destino
+    sf::Vector2i entrada(ENEMY_ENTRY_Y, ENEMY_ENTRY_X);            // en términos (col, fila) punto de salida de los enemigos
     sf::Vector2i castillo(CASTLE_PLACEMENT_X, CASTLE_PLACEMENT_Y); // posicion castillo
 
     // Calcular camino con A*
     std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
 
     // Generador de enemigos desde población
-    auto generarPoblaciones = [&](int ronda) {
-
+    auto generarPoblaciones = [&](int ronda)
+    {
         // aumento gradual de la cantidad de enemigos
-        int ogros = 3 + generaciones ;      
-        int elfos = 2 + generaciones ;      
-        int harpias = 1 + generaciones;  
+        int ogros = 3 + generaciones;
+        int elfos = 2 + generaciones;
+        int harpias = 1 + generaciones;
         int mercenarios = 1 + generaciones;
 
-        //crear de enemigos
-        // OGROS
-        if ((int)poblacionOgros.size() < ogros) {
+        // crear de enemigos
+        //  OGROS
+        if ((int)poblacionOgros.size() < ogros)
+        {
             int faltan = ogros - poblacionOgros.size();
-            for (int i = 0; i < faltan; ++i) {
+            for (int i = 0; i < faltan; ++i)
+            {
                 auto e = std::make_unique<Ogro>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionOgros.push_back(std::move(e));
             }
-        } else {
+        }
+        else
+        {
             GeneticAlgorithm::select_and_reproduce(poblacionOgros, 0.1);
-        }        
+        }
 
         // ELFOS
-        if ((int)poblacionElfos.size() < elfos) {
+        if ((int)poblacionElfos.size() < elfos)
+        {
             int faltan = elfos - poblacionElfos.size();
-            for (int i = 0; i < faltan; ++i) {
+            for (int i = 0; i < faltan; ++i)
+            {
                 auto e = std::make_unique<ElfoOscuro>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionElfos.push_back(std::move(e));
             }
-        } else {
+        }
+        else
+        {
             GeneticAlgorithm::select_and_reproduce(poblacionElfos, 0.1);
         }
 
         // HARPIAS
-        if ((int)poblacionHarpias.size() < harpias) {
+        if ((int)poblacionHarpias.size() < harpias)
+        {
             int faltan = harpias - poblacionHarpias.size();
-            for (int i = 0; i < faltan; ++i) {
+            for (int i = 0; i < faltan; ++i)
+            {
                 auto e = std::make_unique<Harpia>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionHarpias.push_back(std::move(e));
             }
-        } else {
+        }
+        else
+        {
             GeneticAlgorithm::select_and_reproduce(poblacionHarpias, 0.1);
         }
-        
+
         // MERCENARIOS
-        if ((int)poblacionMercenarios.size() < mercenarios) {
+        if ((int)poblacionMercenarios.size() < mercenarios)
+        {
             int faltan = mercenarios - poblacionMercenarios.size();
-            for (int i = 0; i < faltan; ++i) {
+            for (int i = 0; i < faltan; ++i)
+            {
                 auto e = std::make_unique<Mercenario>();
                 e->setPath(gameMap.findPathAStar(entrada, castillo));
                 poblacionMercenarios.push_back(std::move(e));
             }
-        } else {
+        }
+        else
+        {
             GeneticAlgorithm::select_and_reproduce(poblacionMercenarios, 0.1);
-        }        
+        }
     };
 
-    auto regenerarEnemigos = [&]() {
+    auto regenerarEnemigos = [&]()
+    {
         enemigos.clear();
-    
-        auto clonarGrupo = [&](std::vector<std::unique_ptr<Enemy>>& poblacion) {
-            for (const auto& enemigo : poblacion) {
+
+        auto clonarGrupo = [&](std::vector<std::unique_ptr<Enemy>> &poblacion)
+        {
+            for (const auto &enemigo : poblacion)
+            {
                 auto copia = enemigo->clone();
                 copia->setPath(gameMap.findPathAStar(entrada, castillo));
                 enemigos.push_back(std::move(copia));
             }
         };
-    
+
         clonarGrupo(poblacionOgros);
         clonarGrupo(poblacionElfos);
         clonarGrupo(poblacionHarpias);
         clonarGrupo(poblacionMercenarios);
-        
     };
 
+    auto resetGame = [&]() {
+        // …aquí vas a resetear TODAS tus variables de juego…
+        gameOver = false;
+        // por ejemplo:
+        oro = 1000;
+        placedCount = upgradeCount = generaciones = enemigosMuertos = mutacionesAcumuladas = 0;
+        fitnessActual = 0.f; probMutacion = 0.05f;
+        phase = Phase::Construction;
+        phaseClock.restart();
+        deltaClock.restart();
+        action = Action::Place;
+        selectedTower = towerButtons[0];
+        poblacionOgros.clear();
+        poblacionElfos.clear();
+        poblacionHarpias.clear();
+        poblacionMercenarios.clear();
+        enemigos.clear();
+        torres.clear();
+        camino = gameMap.findPathAStar(entrada, castillo);
+    };
 
-    while (window.isOpen()) {
+    while (window.isOpen())
+    {
 
-        //timer que usan las torres para atacar
+        // timer que usan las torres para atacar
         float deltaTime = deltaClock.restart().asSeconds();
 
         // Eventos
-        while (auto mev = window.pollEvent()) {
-            if (mev->is<sf::Event::Closed>()) {
+        while (auto mev = window.pollEvent())
+        {   
+        
+            if (mev->is<sf::Event::Closed>())
+            {
                 window.close();
                 break;
             }
-            if (auto mb = mev->getIf<sf::Event::MouseButtonPressed>()) {
+            // Si estamos en Game Over, sólo aceptamos R para reiniciar
+            // 2) si estamos en Game Over, solo aceptamos R para reiniciar
+            if (gameOver) {
+                if (auto kp = mev->getIf<sf::Event::KeyPressed>()) {
+                    // fijate que usamos scancode, no code ni sf::Key
+                    if (kp->scancode == sf::Keyboard::Scancode::R) {
+                        resetGame();
+                    }
+                }
+                continue; // ignoramos el resto de eventos en Game Over
+            }            
+            if (auto mb = mev->getIf<sf::Event::MouseButtonPressed>())
+            {
                 sf::Vector2i mpos = sf::Mouse::getPosition(window);
 
                 // 1) Clic en toolbar?
-                if (mpos.y < int(TOOLBAR_HEIGHT)) {
-                    int idx = mpos.x / TILE_SIZE;  // 0..3
-                    if (idx >= 0 && idx <= 3) {
-                        if (idx < 3) {
-                            action        = Action::Place;
+                if (mpos.y < int(TOOLBAR_HEIGHT))
+                {
+                    int idx = mpos.x / TILE_SIZE; // 0..3
+                    if (idx >= 0 && idx <= 3)
+                    {
+                        if (idx < 3)
+                        {
+                            action = Action::Place;
                             selectedTower = towerButtons[idx];
-                        } else {
+                        }
+                        else
+                        {
                             action = Action::Upgrade;
                         }
                     }
@@ -206,52 +311,69 @@ int main() {
                 // 2) Clic en mapa
                 int col = mpos.x / TILE_SIZE;
                 int row = (mpos.y - TOOLBAR_HEIGHT) / TILE_SIZE;
-                if (row>=0 && row<MAP_HEIGHT && col>=0 && col<MAP_WIDTH) {
-                    if (mb->button == sf::Mouse::Button::Left) {
-                        if (action == Action::Place) {
-                            if (gameMap.placeTower(row, col, selectedTower, oro)) {
+                if (row >= 0 && row < MAP_HEIGHT && col >= 0 && col < MAP_WIDTH)
+                {
+                    if (mb->button == sf::Mouse::Button::Left)
+                    {
+                        if (action == Action::Place)
+                        {
+                            if (gameMap.placeTower(row, col, selectedTower, oro))
+                            {
                                 ++placedCount;
-                            
-                                if (selectedTower == TileType::Tower1) {
+
+                                if (selectedTower == TileType::Tower1)
+                                {
                                     auto torre = std::make_unique<ArqueroTower>();
                                     torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
                                     torre->setGridPosition(row, col);
                                     torres.push_back(std::move(torre));
-                                } else if(selectedTower == TileType::Tower2){
+                                }
+                                else if (selectedTower == TileType::Tower2)
+                                {
                                     auto torre = std::make_unique<MagoTower>();
                                     torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
                                     torre->setGridPosition(row, col);
                                     torres.push_back(std::move(torre));
-                                } else if(selectedTower == TileType::Tower3){
+                                }
+                                else if (selectedTower == TileType::Tower3)
+                                {
                                     auto torre = std::make_unique<ArtilleroTower>();
                                     torre->setPosition(sf::Vector2f(static_cast<float>(col * TILE_SIZE), static_cast<float>(TOOLBAR_HEIGHT + row * TILE_SIZE)));
                                     torre->setGridPosition(row, col);
                                     torres.push_back(std::move(torre));
                                 }
-                            
-                            } else {
-                                std::cout << "Cannot place tower at ("<<row<<","<<col<<")\n";
                             }
-                        } else { // Upgrade
+                            else
+                            {
+                                std::cout << "Cannot place tower at (" << row << "," << col << ")\n";
+                            }
+                        }
+                        else
+                        { // Upgrade
                             bool upgraded = false;
-                            for (auto& torre : torres) {
+                            for (auto &torre : torres)
+                            {
                                 auto [tRow, tCol] = torre->getGridPosition();
-                                if (tRow == row && tCol == col) {
-                                    if (torre->upgradeTower(oro)) {
+                                if (tRow == row && tCol == col)
+                                {
+                                    if (torre->upgradeTower(oro))
+                                    {
                                         ++upgradeCount;
                                         upgraded = true;
                                         std::cout << "Torre mejorada. Nivel actual: " << torre->getLevel() << "\n";
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         std::cout << "No se mejoro la torre, nivel maximo o falta de oro\n";
                                     }
                                     break;
                                 }
                             }
-                            if (!upgraded) {
+                            if (!upgraded)
+                            {
                                 std::cout << "No tower found at (" << row << "," << col << ")\n";
                             }
                         }
-                        
                     }
                 }
             }
@@ -259,42 +381,57 @@ int main() {
 
         // Lógica de fases
         float elapsed = phaseClock.getElapsedTime().asSeconds();
-        if (phase == Phase::Construction && elapsed >= BUILD_SECONDS) {
+        if (phase == Phase::Construction && elapsed >= BUILD_SECONDS)
+        {
             phase = Phase::Wave;
             phaseClock.restart();
 
             // Calcular camino con A*
             std::vector<sf::Vector2i> camino = gameMap.findPathAStar(entrada, castillo);
 
-            //creacion de los enemigos
+            // creacion de los enemigos
             generarPoblaciones(generaciones);
             regenerarEnemigos();
             ++generaciones;
-
-
         }
 
-        //enemigos moviendose usando A*
-        if (phase == Phase::Wave) {
-            for (auto& e : enemigos) {
+        // enemigos moviendose usando A*
+        if (phase == Phase::Wave)
+        {
+            for (auto &e : enemigos)
+            {
                 e->moveEnemy();
+                auto pos = e->getPosition();
+                int col  = static_cast<int>(pos.x) / TILE_SIZE;
+                int row  = static_cast<int>(pos.y - TOOLBAR_HEIGHT) / TILE_SIZE;
+                if (row == castillo.y && col == castillo.x)
+                {
+                    gameOver = true;
+                    break;
+                }
             }
-            for (auto& torre : torres) {
+            for (auto &torre : torres)
+            {
                 torre->attackEnemy(enemigos, deltaTime, oro, enemigosMuertos);
             }
-        
-            if (enemigos.empty()) {
+            // 3c) Comprobar llegada al castillo → GAME OVER
+
+                if (enemigos.empty() && !gameOver)
+            {
                 std::cout << "=== Generación " << generaciones << " finalizada ===\n";
 
-                auto Mutar = [&](std::vector<std::unique_ptr<Enemy>>& poblacion, const std::string& tipo) {
-                    for (auto& e : poblacion) e->fitness();
+                auto Mutar = [&](std::vector<std::unique_ptr<Enemy>> &poblacion, const std::string &tipo)
+                {
+                    for (auto &e : poblacion)
+                        e->fitness();
                     GeneticAlgorithm::select_and_reproduce(poblacion, probMutacion);
 
                     std::cout << "Tipo: " << tipo << "\n";
-                    for (const auto& enemy : poblacion) {
+                    for (const auto &enemy : poblacion)
+                    {
                         std::cout << "Enemy: salud=" << enemy->getHealth()
-                                << ", velocidad=" << enemy->getSpeed()
-                                << ", fitness=" << enemy->fitness() << "\n";
+                                  << ", velocidad=" << enemy->getSpeed()
+                                  << ", fitness=" << enemy->fitness() << "\n";
                     }
                 };
 
@@ -308,119 +445,190 @@ int main() {
                 phase = Phase::Construction;
                 phaseClock.restart();
             }
-
         }
-
+        // 4a) Si Game Over → pantalla negra + texto + salto
+        if (gameOver)
+        {
+            window.clear(sf::Color::Black);
+            window.draw(gameOverText);
+            window.display();
+            continue;  // no dibujamos nada más este frame
+        }
+    
         // Dibujado
         window.clear(sf::Color::Black);
 
         // Toolbar fondo
-        sf::RectangleShape toolbar({ float(MAP_WIDTH*TILE_SIZE), float(TOOLBAR_HEIGHT) });
-        toolbar.setFillColor({200,200,200});
+        sf::RectangleShape toolbar({float(MAP_WIDTH * TILE_SIZE), float(TOOLBAR_HEIGHT-5)});
+        toolbar.setFillColor({200, 200, 200});
         window.draw(toolbar);
+        sf::RectangleShape separator({ float(MAP_WIDTH * TILE_SIZE), 3.f }); // ancho total, 2px de alto
+        separator.setFillColor(sf::Color::Black);
+        separator.setPosition({ 0.f, float(TOOLBAR_HEIGHT) }); // justo al borde inferior
+        window.draw(separator);
+        
 
         // Botones de torre (0..2)
-        for (int i = 0; i < 3; ++i) {
-            sf::RectangleShape btn({ float(TILE_SIZE-4), float(TOOLBAR_HEIGHT-4) });
-            btn.setPosition({ float(i*TILE_SIZE+2), 2.f });
-            bool active = (action==Action::Place && selectedTower==towerButtons[i]);
+        for (int i = 0; i < 3; ++i)
+        {
+            sf::RectangleShape btn({float(TILE_SIZE - 2), float(TOOLBAR_HEIGHT - 50)});
+            btn.setPosition({float(i * TILE_SIZE + 2), 27.f});
+            bool active = (action == Action::Place && selectedTower == towerButtons[i]);
             btn.setFillColor(active
-                ? sf::Color(150,150,150)
-                : getColorForTile(towerButtons[i])
-            );
+                                 ? sf::Color(150, 150, 150)
+                                 : getColorForTile(towerButtons[i]));
             window.draw(btn);
         }
 
         // Botón Upgrade (índice 3)
-        sf::RectangleShape upBtn({ float(TILE_SIZE-4), float(TOOLBAR_HEIGHT-4) });
-        upBtn.setPosition({ float(3*TILE_SIZE+2), 2.f });
-        bool upActive = (action==Action::Upgrade);
-        upBtn.setFillColor(upActive ? sf::Color(150,150,150) : sf::Color::Yellow);
+        sf::RectangleShape upBtn({float(TILE_SIZE - 4), float(TOOLBAR_HEIGHT - 50)});
+        upBtn.setPosition({float(3 * TILE_SIZE + 2), 27.f});
+        bool upActive = (action == Action::Upgrade);
+        upBtn.setFillColor(upActive ? sf::Color(150, 150, 150) : sf::Color::Yellow);
         window.draw(upBtn);
 
         // Etiqueta "U"
         sf::Text upLabel(font, "U", CHAR_SIZE);
         upLabel.setFillColor(sf::Color::Black);
-        upLabel.setPosition({
-            float(3*TILE_SIZE + 2 + (TILE_SIZE - CHAR_SIZE)/2),
-            4.f
-        });
+        upLabel.setPosition({float(3 * TILE_SIZE + 2 + (TILE_SIZE - CHAR_SIZE) / 2),
+                             29.f});
         window.draw(upLabel);
 
         // Texto de fase
         std::string tbText = (phase == Phase::Construction)
-            ? std::string("Construction Phase: ") + formatTime(BUILD_SECONDS - elapsed)
-            : "Round Phase";
+                                 ? std::string("Construction Phase: ") + formatTime(BUILD_SECONDS - elapsed)
+                                 : "Round Phase";
         sf::Text toolbarLabel(font, tbText, CHAR_SIZE);
         toolbarLabel.setFillColor(sf::Color::Black);
-        toolbarLabel.setPosition({ float(TILE_SIZE + 200), 10.f });
+        toolbarLabel.setStyle(sf::Text::Bold);
+        toolbarLabel.setPosition({float(TILE_SIZE + 550), 30.f});
         window.draw(toolbarLabel);
-
-
-        // Dibuja el mapa (las celdas de fondo)
-        for (int r = 0; r < MAP_HEIGHT; ++r) {
-            for (int c = 0; c < MAP_WIDTH; ++c) {
-                sf::RectangleShape cell({ float(TILE_SIZE-2), float(TILE_SIZE-2) });
-                cell.setPosition({
-                    float(c*TILE_SIZE),
-                    float(TOOLBAR_HEIGHT + r*TILE_SIZE)
-                });
-                cell.setFillColor(getColorForTile(gameMap.getTileType(r,c)));
-                window.draw(cell);
-            }
+        // Dibujar el camino (rastro de los enemigos)
+        for (const auto& step : camino) {
+            sf::RectangleShape trail({float(TILE_SIZE - 2.5), float(TILE_SIZE - 2.5)});
+            trail.setPosition({float(step.y * TILE_SIZE), float(TOOLBAR_HEIGHT + step.x * TILE_SIZE)});
+            trail.setFillColor(sf::Color(200, 200, 255, 100)); // violeta claro semitransparente
+            window.draw(trail);
         }
 
+        // Dibuja el mapa (las celdas de fondo)
+        for (int r = 0; r < MAP_HEIGHT; ++r)
+        {
+            for (int c = 0; c < MAP_WIDTH; ++c)
+            {
+                sf::RectangleShape cell({float(TILE_SIZE - 2.5), float(TILE_SIZE - 2.5)});
+                cell.setPosition({float(c * TILE_SIZE), float(TOOLBAR_HEIGHT + r * TILE_SIZE)});
+
+                // Color base según tipo de celda
+                sf::Color cellColor = getColorForTile(gameMap.getTileType(r, c));
+
+                // Verificar si hay una torre en esta celda
+                bool hasTower = false;
+                for (const auto &torre : torres)
+                {
+                    auto [tRow, tCol] = torre->getGridPosition();
+                    if (tRow == r && tCol == c)
+                    {
+                        hasTower = true;
+                        break;
+                    }
+                }
+
+                // Verificar si hay un enemigo en esta celda
+                bool hasEnemy = false;
+                for (const auto &enemigo : enemigos)
+                {
+                    sf::Vector2f pos = enemigo->getPosition();
+                    int eCol = static_cast<int>(pos.x) / TILE_SIZE;
+                    int eRow = static_cast<int>(pos.y - TOOLBAR_HEIGHT) / TILE_SIZE;
+
+                    if (eRow == r && eCol == c)
+                    {
+                        hasEnemy = true;
+                        break;
+                    }
+                }
+
+        if (hasTower)
+            cellColor = sf::Color::Red; // rojo para torres
+        else if (hasEnemy)
+            cellColor = sf::Color(139, 69, 19); // café para enemigos
+
+        cell.setFillColor(cellColor);
+        window.draw(cell);
+    }
+}
+
+
         // Dibuja las torres (que están encima del mapa)
-        for (auto& torre : torres) {
+        for (auto &torre : torres)
+        {
             torre->draw(window);
         }
 
-
         // Panel derecho
-        sf::RectangleShape panel({ float(PANEL_WIDTH), float(MAP_HEIGHT*TILE_SIZE) });
-        panel.setPosition({ float(MAP_WIDTH*TILE_SIZE), float(TOOLBAR_HEIGHT) });
-        panel.setFillColor({230,230,230});
+        sf::RectangleShape panel({float(PANEL_WIDTH), float(MAP_HEIGHT * TILE_SIZE)});
+        panel.setPosition({float(MAP_WIDTH * TILE_SIZE), float(TOOLBAR_HEIGHT)});
+        panel.setFillColor({245, 245, 220});
         window.draw(panel);
 
         // Estadísticas
-        float x0 = MAP_WIDTH*TILE_SIZE + 10.f;
-        float y0 = TOOLBAR_HEIGHT + 10.f;
-        float dy = 22.f;
-        sf::Text stat(font, "", CHAR_SIZE);
+        float x0 = MAP_WIDTH * TILE_SIZE + 25.f;
+        float y0 = TOOLBAR_HEIGHT + 115.f;
+        float dy = 20.f;
+        sf::Text stat(font, "ARIALDB.TFF", CHAR_SIZE);
         stat.setFillColor(sf::Color::Black);
+        stat.setStyle(sf::Text::Bold);
 
-        if (phase == Phase::Construction) {
+        if (phase == Phase::Construction)
+        {
             stat.setString("Construction Phase");
-            stat.setPosition({ x0, y0 }); window.draw(stat);
+            stat.setPosition({x0, y0});
+            window.draw(stat);
             stat.setString("Towers Placed: " + std::to_string(placedCount));
-            stat.setPosition({ x0, y0 + dy }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy});
+            window.draw(stat);
             stat.setString("Upgrades: " + std::to_string(upgradeCount));
-            stat.setPosition({ x0, y0 + dy*2 }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy * 2});
+            window.draw(stat);
             stat.setString("Gold: " + std::to_string(oro));
-            stat.setPosition({ x0, y0 + dy*3 }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy * 3});
+            window.draw(stat);
             stat.setString("Generation: " + std::to_string(generaciones));
-            stat.setPosition({ x0, y0 + dy*4 }); window.draw(stat);
-        } else {
+            stat.setPosition({x0, y0 + dy * 4});
+            window.draw(stat);
+        }
+        else
+        {
             stat.setString("Round Phase");
-            stat.setPosition({ x0, y0 }); window.draw(stat);
+            stat.setPosition({x0, y0});
+            window.draw(stat);
             stat.setString("Enemies Killed: " + std::to_string(enemigosMuertos));
-            stat.setPosition({ x0, y0 + dy }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy});
+            window.draw(stat);
             stat.setString("Gold: " + std::to_string(oro));
-            stat.setPosition({ x0, y0 + dy*2 }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy * 2});
+            window.draw(stat);
             stat.setString("Fitness: " + std::to_string(fitnessActual));
-            stat.setPosition({ x0, y0 + dy*3 }); window.draw(stat);
-            stat.setString("Mutation%: " + std::to_string(int(probMutacion*100)) + "%");
-            stat.setPosition({ x0, y0 + dy*4 }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy * 3});
+            window.draw(stat);
+            stat.setString("Mutation%: " + std::to_string(int(probMutacion * 100)) + "%");
+            stat.setPosition({x0, y0 + dy * 4});
+            window.draw(stat);
             stat.setString("Mutations: " + std::to_string(mutacionesAcumuladas));
-            stat.setPosition({ x0, y0 + dy*5 }); window.draw(stat);
+            stat.setPosition({x0, y0 + dy * 5});
+            window.draw(stat);
         }
 
-        if (phase == Phase::Wave) {
-            for (auto& e : enemigos) {
+        if (phase == Phase::Wave)
+        {
+            for (auto &e : enemigos)
+            {
                 e->draw(window);
             }
 
-            for (auto& torre : torres) {
+            for (auto &torre : torres)
+            {
                 torre->attackEnemy(enemigos, deltaTime, oro, enemigosMuertos);
             }
         }

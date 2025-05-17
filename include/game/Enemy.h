@@ -53,8 +53,17 @@ protected:
     sf::Vector2f position;
     sf::Texture texture;
     sf::Sprite sprite;
-
+    bool hasSprite = false;
     //camino calculado con A*
     std::vector<sf::Vector2i> path;  // camino precalculado: lista de posiciones en la matriz
     int pathIndex = 0;               // en qué punto del camino va
+    void loadTexture(const std::string& filename) {
+        if (texture.loadFromFile(filename)) {
+            sprite.setTexture(texture);
+            hasSprite = true;          // <— marcamos que sí tenemos sprite
+        } else {
+            std::cerr << "[ERROR] No se pudo cargar textura: " << filename << "\n";
+            hasSprite = false;
+        }
+    }
 };

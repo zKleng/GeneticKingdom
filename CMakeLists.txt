@@ -24,13 +24,13 @@ else()
     message(WARNING "SFML not found with find_package, using manual paths")
 
     # Rutas manuales (hay que adaptarlo a cada SO, sino no funciona, manualmente hay que cambiar las rutas)
-    set(SFML_PATH "/usr/local") #cambiar esta ruta
+    set(SFML_PATH "/usr") #cambiar esta ruta
     include_directories(${SFML_PATH}/include)
 
     target_link_libraries(GeneticKingdom # y estas 3 otras
-        ${SFML_PATH}/lib/libsfml-graphics.dylib
-        ${SFML_PATH}/lib/libsfml-window.dylib
-        ${SFML_PATH}/lib/libsfml-system.dylib
+        sfml-graphics
+        sfml-window
+        sfml-system
     )
 endif()
 

@@ -19,7 +19,7 @@ Mercenario::Mercenario() {
         // alternativa: usar color sólido en draw()
     }*/
 
-    sprite.setTexture(texture);
+    loadTexture("resources/EnemySprites/MercenarioSprite.png");
     sprite.setPosition(position);
 }
 
@@ -27,7 +27,7 @@ void Mercenario::draw(sf::RenderWindow& window) {
     sf::RectangleShape dummy{ sf::Vector2f(TILE_SIZE, TILE_SIZE) };
     dummy.setFillColor(sf::Color(205, 165, 200)); // algun color xd
     dummy.setPosition(position);
-    window.draw(dummy);
+    window.draw(sprite);
 }
 
 void Mercenario::setGenes(float h, float s, float ra, float rm, float rt) {

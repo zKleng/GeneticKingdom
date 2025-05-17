@@ -13,15 +13,15 @@
 //Constantes del juego para mas facil manejo
 
 //cantidad de casillas de la matriz
-const int MAP_WIDTH  = 50;
-const int MAP_HEIGHT = 35;
+const int MAP_WIDTH  = 40;
+const int MAP_HEIGHT = 25;
 
 // Constantes de tamaño
 constexpr std::uint32_t TILE_SIZE      = MAP_WIDTH/2;
-constexpr std::uint32_t TOOLBAR_HEIGHT = TILE_SIZE;
-constexpr int           CHAR_SIZE      = 16;
-constexpr std::uint32_t PANEL_WIDTH    = 200u;
-constexpr float         BUILD_SECONDS  = 5.f;
+constexpr std::uint32_t TOOLBAR_HEIGHT = TILE_SIZE+50;
+constexpr int           CHAR_SIZE      = 10;
+constexpr std::uint32_t PANEL_WIDTH    = 150u;
+constexpr float         BUILD_SECONDS  = 30.f;
 
 //Constantes de posicion del castillo y salida de enemigos
 const int CASTLE_PLACEMENT_X=MAP_WIDTH-1;

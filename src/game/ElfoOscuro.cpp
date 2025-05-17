@@ -19,7 +19,7 @@ ElfoOscuro::ElfoOscuro() {
         // alternativa: usar color sólido en draw()
     }*/
 
-    sprite.setTexture(texture);
+    loadTexture("resources/EnemySprites/ElfoOscuroSprite.png");
     sprite.setPosition(position);
 }
 
@@ -27,7 +27,7 @@ void ElfoOscuro::draw(sf::RenderWindow& window) {
     sf::RectangleShape dummy{ sf::Vector2f(TILE_SIZE, TILE_SIZE) };
     dummy.setFillColor(sf::Color(20, 20, 30)); // Verde oscuro
     dummy.setPosition(position);
-    window.draw(dummy);
+    window.draw(sprite);
 }
 
 void ElfoOscuro::setGenes(float h, float s, float ra, float rm, float rt) {

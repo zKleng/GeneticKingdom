@@ -19,7 +19,7 @@ Harpia::Harpia() {
         // alternativa: usar color sólido en draw()
     }*/
 
-    sprite.setTexture(texture);
+    loadTexture("resources/EnemySprites/HarpiaSprite.png");
     sprite.setPosition(position);
 }
 
@@ -27,7 +27,7 @@ void Harpia::draw(sf::RenderWindow& window) {
     sf::RectangleShape dummy{ sf::Vector2f(TILE_SIZE, TILE_SIZE) };
     dummy.setFillColor(sf::Color(255, 165, 0)); // Naranja
     dummy.setPosition(position);
-    window.draw(dummy);
+    window.draw(sprite);
 }
 
 void Harpia::setGenes(float h, float s, float ra, float rm, float rt) {
